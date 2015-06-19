@@ -46,7 +46,7 @@ By default, it will only print the title for you locally.
   where YouTube urls should be ignored
 
 
-## How to obtain a Google API key
+#### How to obtain a Google API key
 
 Prerequisites: A Google account
 
