@@ -7,7 +7,7 @@ import hexchat
 
 
 __module_name__        = "YouTube Title"
-__module_version__     = "0.2.0"
+__module_version__     = "0.2.1"
 __module_description__ = "Reads and displays video info from an URL."
 __module_author__      = "FichteFoll <fichtefoll2@googlemail.com>"
 
@@ -171,7 +171,7 @@ def say_yt_title(title):
 
 
 def print_yt_title(title):
-    message = "*ytt*\t\002Title:\002 " + title
+    message = "\002Title:\002 " + title
     print(message)
 
 
@@ -186,21 +186,21 @@ def manage_list_setting(name, action, items=[]):
 
     if action == "list":
         list_str = " ".join(list_)
-        print("*ytt*\t{name} list: {list_str}".format(**locals()))
+        print("{name} list: {list_str}".format(**locals()))
     elif items and action == "add":
         for item in items:
             if item not in list_:
                 list_.append(item)
-                print("*ytt*\tAdded {item} to {name} list".format(**locals()))
+                print("Added {item} to {name} list".format(**locals()))
             else:
-                print("*ytt*\t{item} already in {name} list".format(**locals()))
+                print("{item} already in {name} list".format(**locals()))
     elif items and action == "remove":
         for item in items:
             if item in list_:
                 list_.remove(item)
-                print("*ytt*\tRemoved {item} from {name} list".format(**locals()))
+                print("Removed {item} from {name} list".format(**locals()))
             else:
-                print("*ytt*\t{item} not in {name} list".format(**locals()))
+                print("{item} not in {name} list".format(**locals()))
     else:
         print(HELP_MAP[name])
 
