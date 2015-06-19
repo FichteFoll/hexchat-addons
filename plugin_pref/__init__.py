@@ -1,7 +1,7 @@
 """TODOC
 """
 
-import collections.abc
+from collections.abc import MutableMapping
 
 import hexchat
 
@@ -15,7 +15,7 @@ __all__ = (
 )
 
 
-class PluginPref(collections.abc.MutableMapping):
+class PluginPref(MutableMapping):
     """MutableMapping interface for hexchat's pluginpref storage system.
 
     pluginpref does not allow setting `None`
