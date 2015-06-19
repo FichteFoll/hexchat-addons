@@ -2,7 +2,7 @@ import hexchat
 
 
 __module_name__ = 'Current Channel Replace'
-__module_version__ = '0.2'
+__module_version__ = '0.2.1'
 __module_description__ = 'Replaces "#" with current channel'
 
 KEY_TAB = 65289
@@ -13,17 +13,11 @@ KEY_MOD_CTRL = 4
 KEY_MOD_ALT = 8
 
 
-def debug(*args, **kwargs):
-    if args:
-        args = list(args)
-        args[0] = "\00314" + str(args[0])
-    print(*args, **kwargs)
-
-
 def on_key_press(word, word_eol, userdata):
     """Performs substitution of "#" on tab and space keys, unless shift is hold.
     """
     msg = hexchat.get_info('inputbox')
+    # If this fails for you, it's because of
     # https://github.com/hexchat/hexchat/issues/869
     key = int(word[0])
     modifier = int(word[1])
@@ -37,7 +31,6 @@ def on_key_press(word, word_eol, userdata):
         and not (modifier & KEY_MOD_SHIFT)
     ):
         msg = msg[:-1] + hexchat.get_info('channel')
-        # debug("Replacing with", hexchat.get_info('channel'))
         hexchat.command("settext %s" % msg)
         hexchat.command("setcursor %s" % len(msg))
 
