@@ -24,11 +24,12 @@ except SystemError:
 
 
 __module_name__        = "YouTube Title"
-__module_version__     = "0.2.2"
+__module_version__     = "0.2.3"
 __module_description__ = "Scans text for YouTube video urls and displays or announces the titles"
 __module_author__      = "FichteFoll <fichtefoll2@googlemail.com>"
 
 
+# TODO make this a config (and add command)
 API_KEY = ""
 
 HELP_STR = """\
@@ -167,7 +168,7 @@ def manage_list_setting(name, action, items=[]):
 
 
 def msg_cb(word, word_eol, userdata):
-    channel = hexchat.get_info('channel')
+    channel = hexchat.get_info('channel').lower()
     callback = print_yt_title
 
     if channel in prefs.get('mute', "").split(","):
