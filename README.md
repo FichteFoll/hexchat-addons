@@ -39,7 +39,7 @@ Print (or announce) a YouTube video's title.
 
 By default, it will only print the title for you locally.
 
-- `\ytt get <url> {<url>}` prints titles of the videos specified
+- `\ytt get` prints titles of the videos specified
 - `\ytt announce` manages a list of channels
   where the title should be announced (i.e. `/say`)
 - `\ytt mute` manages a list of channels
