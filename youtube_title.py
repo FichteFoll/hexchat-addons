@@ -1,27 +1,45 @@
 import re
-import collections.abc
 
 import requests
 
 import hexchat
 
+try:
+    from .plugin_pref import PluginPref
+except SystemError:
+    # Add addons path to sys.path for win32
+    # See https://github.com/hexchat/hexchat/issues/1396
+    import os
+    import sys
+
+    if sys.platform == "win32":
+        addons_path = os.path.join(hexchat.get_info("configdir"), "addons")
+        if addons_path not in sys.path:
+            sys.path.append(addons_path)
+
+    from plugin_pref import PluginPref
+
+
+################################################################################
+
 
 __module_name__        = "YouTube Title"
-__module_version__     = "0.2.1"
-__module_description__ = "Reads and displays video info from an URL."
+__module_version__     = "0.2.2"
+__module_description__ = "Scans text for YouTube video urls and displays or announces the titles"
 __module_author__      = "FichteFoll <fichtefoll2@googlemail.com>"
 
 
 API_KEY = ""
 
 HELP_STR = """\
+Usage:
 /ytt \002get\002 <url> {<url>} - Get titles of passed url(s)
 /ytt \002announce\002 [add | remove | list] <channel> - Manage list of channels where video titles should be announced
 /ytt \002mute\002 [add | remove | list] <channel> - Manage list of channels where video urls should be ignored
-By default, YouTube Title Display will only print the video's title for you.
+By default, YouTube Title will only print the video's title for you.
 """
 
-HELP_MAP = dict(zip(("get", "announce", "mute"), HELP_STR.splitlines()[:-1]))
+HELP_MAP = dict(zip(("get", "announce", "mute"), HELP_STR.splitlines()[1:-1]))
 
 PRINT_PREFIX = "*ytt*"
 
@@ -39,67 +57,6 @@ def print(*args, **kwargs):
                 args[i] = ("\n" + PRINT_PREFIX + "\t").join(arg.splitlines())
         args[0] = PRINT_PREFIX + "\t" + str(args[0])
     __builtins__.print(*args, **kwargs)
-
-
-class PluginPref(collections.abc.MutableMapping):
-    """MutableMapping interface for hexchat's pluginpref storage system.
-
-    pluginpref does not allow setting `None`
-    since it's returned by get_pluginpref
-    if the key has not been assigned a value.
-    """
-
-    def __init__(self, prefix):
-        self.prefix = prefix + "_"
-
-    def keys(self):
-        all_keys = hexchat.list_pluginpref(self.prefix)
-        keys = set()
-        for key in all_keys:
-            if key.startswith(self.prefix):
-                keys.add(key[len(self.prefix):])
-        return keys
-
-    # def __contains__(self, key):
-    #     return hexchat.get_pluginpref(self.prefix + key) is not None
-
-    def __iter__(self):
-        return iter(self.keys())
-
-    def __len__(self):
-        return len(self.keys())
-
-    def __getitem__(self, key):
-        if not isinstance(key, str):
-            raise TypeError("Key must be a string")
-        val = hexchat.get_pluginpref(self.prefix + key)
-        if val is None:
-            raise KeyError(key)
-        return val
-
-    def __setitem__(self, key, value):
-        if not isinstance(key, str):
-            raise TypeError("Key must be a string")
-        if value is None:
-            raise ValueError("Can not set `None`")
-        if not hexchat.set_pluginpref(self.prefix + key, value):
-            raise RuntimeError("Could not set %s" % value)
-
-    def __delitem__(self, key):
-        if not isinstance(key, str):
-            raise TypeError("Key must be a string")
-        if key not in self:
-            raise KeyError(key)
-        else:
-            self.delete(key)
-
-    def delete(self, key):
-        """Unlike `del`, this does not raise if the key does not exist.
-        """
-        if not isinstance(key, str):
-            raise TypeError("Key must be a string")
-        if not hexchat.del_pluginpref(self.prefix + key):
-            raise RuntimeError("Could not delete %s" + key)
 
 
 def delayed_command(context, timeout, cmd):
