@@ -5,7 +5,7 @@ import requests
 import hexchat
 
 try:
-    from .plugin_pref import PluginPref
+    from .pluginpref import PluginPref
 except SystemError:
     # Add addons path to sys.path for win32
     # See https://github.com/hexchat/hexchat/issues/1396
@@ -17,7 +17,7 @@ except SystemError:
         if addons_path not in sys.path:
             sys.path.append(addons_path)
 
-    from plugin_pref import PluginPref
+    from pluginpref import PluginPref
 
 
 ################################################################################

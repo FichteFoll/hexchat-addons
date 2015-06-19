@@ -1,3 +1,8 @@
+"""Tests for pluginpref module.
+
+Run using `/py load pluginpref/test.py`.
+"""
+
 import hexchat
 
 try:
@@ -13,7 +18,7 @@ except SystemError:
         if addons_path not in sys.path:
             sys.path.append(addons_path)
 
-    from plugin_pref import PluginPref
+    from pluginpref import PluginPref
 
 __module_name__        = "PluginPref tests"
 __module_version__     = "0.2.0"
