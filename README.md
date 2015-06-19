@@ -34,8 +34,8 @@ Note: Only works if at the end of input.
 
 Print (or announce) a YouTube video's title.
 
-**Requires a Google API Key!**
-(that you currently need to insert in the source)
+[**Requires a Google API key!**](#how-to-obtain-a-google-api-key)
+(which needs to be inserted in the source, for now)
 
 By default, it will only print the title for you locally.
 
@@ -44,3 +44,16 @@ By default, it will only print the title for you locally.
   where the title should be announced (i.e. `/say`)
 - `\ytt mute` manages a list of channels
   where YouTube urls should be ignored
+
+
+## How to obtain a Google API key
+
+Prerequisites: A Google account
+
+1. Create a project at https://console.developers.google.com/project
+2. Browse "APIs & auth -> APIs" in the sidebar
+3. Select "YouTube Data API"
+4. Click "Enable API"
+5. Browse "APIs & auth -> Credentials" in the sidebar
+6. Click "Create new Key"
+7. Select "Server Key" and leave the IP range input blank (or insert some IP range if you feel like it)
