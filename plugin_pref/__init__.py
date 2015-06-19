@@ -1,4 +1,8 @@
-"""TODOC
+"""Settings abstraction of hexchat's pluginpref in form of a MutableMapping.
+
+Exported classes:
+
+- PluginPref
 """
 
 from collections.abc import MutableMapping
@@ -18,15 +22,50 @@ __all__ = (
 class PluginPref(MutableMapping):
     """MutableMapping interface for hexchat's pluginpref storage system.
 
-    pluginpref does not allow setting `None`
-    since it's returned by get_pluginpref
-    if the key has not been assigned a value.
+    All settings are internally prefixed with a string
+    that is passed to the constructor.
+
+
+    Limitations of pluginpref:
+
+    - Only supports strings, numbers and booleans.
+    - Not lists, dicts, `None`, or arbitrary objects.
+      Use the json or pickle modules to serialize those to strings.
+    - Booleans are converted to numbers.
+
+
+    Example usage:
+
+    >>> __module_name__ = "Your Awesome Addon Name"
+    >>> pref = PluginPref(__module_name__)  # or __module_name__.replace(" ", "_").lower()
+    >>> pref["a_setting"] = "a value"
+    >>> "a_setting" in pref
+    True
+    >>> pref["a_setting"])
+    'a value'
+    >>> pref["a_number"] = 123
+    >>> pref["a_number"]
+    123
+    >>> pref["a_boolean"] = True
+    >>> list(pref.items())
+    [("a_setting": "a_value"), ('a_number': 123), ('a_boolean': 1)]
+    >>> pref.keys()
+    {'a_setting', 'a_number', 'a_bool'}
+    >>> for k in pref.keys(): del pref[k]
+    >>> list(pref.items())
+    []
+    >>> del pref["doesn't exist"]
+    KeyError: "doesn't exist"
+    >>> pref.delete("doesn't exist")
+    >>> pref.get("doesn't exist", NotImplemented)
+    NotImplemented
     """
 
     def __init__(self, prefix):
         self.prefix = prefix + "_"
 
     def keys(self):
+        """Return a set of all keys in this PluginPref instance."""
         all_keys = hexchat.list_pluginpref(self.prefix)
         keys = set()
         for key in all_keys:
