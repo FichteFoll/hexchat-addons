@@ -1,8 +1,8 @@
 FichteFoll's Hexchat addons
 ===========================
 
-This is just a compilation of addons for hexchat,
-using it's Python plugin.
+This is just a compilation of modules and addons for hexchat,
+using its Python plugin.
 
 
 ## Modules
