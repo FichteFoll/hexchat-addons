@@ -30,7 +30,7 @@ Insert literal space when holding shift key.
 Note: Only works if at the end of input.
 
 
-### [youtube_title.py](./current_channel_replace.py)
+### [youtube_title.py](./youtube_title.py)
 
 Print (or announce) a YouTube video's title.
 
