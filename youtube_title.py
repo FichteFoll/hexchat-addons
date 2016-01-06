@@ -1,3 +1,6 @@
+"""Python 3 plugin for Hexchat that prints or announces titles of YouTube URLs.
+"""
+
 import re
 
 import requests
@@ -24,7 +27,7 @@ except SystemError:
 
 
 __module_name__        = "YouTube Title"
-__module_version__     = "0.2.3"
+__module_version__     = "0.2.3+"
 __module_description__ = "Scans text for YouTube video urls and displays or announces the titles"
 __module_author__      = "FichteFoll <fichtefoll2@googlemail.com>"
 
@@ -51,12 +54,13 @@ PRINT_PREFIX = "*ytt*"
 def print(*args, **kwargs):
     """Use rocket science to prepend 'PRINT_PREFIX\t' to each line for `print`.
     """
+    prefix = PRINT_PREFIX + "\t"
     if args:
         args = list(args)
         for i, arg in enumerate(args):
             if isinstance(args[0], str) and "\n" in args[0]:
-                args[i] = ("\n" + PRINT_PREFIX + "\t").join(arg.splitlines())
-        args[0] = PRINT_PREFIX + "\t" + str(args[0])
+                args[i] = ("\n" + prefix).join(arg.splitlines())
+        args[0] = prefix + str(args[0])
     __builtins__.print(*args, **kwargs)
 
 
@@ -116,7 +120,7 @@ def find_ids(text):
         for m in reg.finditer(text):
             ids.add((m.start(1), m.group(1)))
 
-    return [vid for pos, vid in sorted(ids, key=lambda x: x[0])]
+    return [vid for (pos, vid) in sorted(ids, key=lambda x: x[0])]
 
 
 def say_yt_title(title):
@@ -142,7 +146,7 @@ def process_vids(vids, title_handler):
 def manage_list_setting(name, action, items=[]):
     list_ = prefs.get(name, "").split(",")
 
-    if action == "list":
+    if action == 'list':
         list_str = " ".join(list_)
         print("{name} list: {list_str}".format(**locals()))
     elif items and action == "add":
@@ -195,7 +199,7 @@ def yttcmd_cb(word, word_eol, userdata):
         print(HELP_STR)
         return hexchat.EAT_HEXCHAT
 
-    if args[0] == "get":
+    if args[0] == 'get':
         if len(args) == 1:
             print(HELP_MAP[args[0]])
             return hexchat.EAT_HEXCHAT
@@ -205,7 +209,7 @@ def yttcmd_cb(word, word_eol, userdata):
             print("Could not find any video id in input")
         else:
             process_vids(vids, print_yt_title)
-    elif args[0] in ("announce", "mute"):
+    elif args[0] in ('announce', 'mute'):
         if len(args) < 2:
             print(HELP_MAP[args[0]])
             return hexchat.EAT_HEXCHAT
