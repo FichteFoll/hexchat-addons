@@ -23,7 +23,7 @@ except SystemError:
     from pluginpref import PluginPref
 
 
-################################################################################
+###############################################################################
 
 
 __module_name__        = "YouTube Title"
@@ -46,9 +46,12 @@ HELP_MAP = dict(zip(('get', 'announce', 'mute', 'key'),
 
 PRINT_PREFIX = "*ytt*"
 
+# global
+prefs = None
 
-################################################################################
 
+###############################################################################
+# General Ultilities
 
 def print(*args, **kwargs):
     """Use rocket science to prepend 'PRINT_PREFIX\t' to each line for `print`.
@@ -74,8 +77,8 @@ def delayed_command(context, timeout, cmd):
     handler = hexchat.hook_timer(timeout, callback)
 
 
-################################################################################
-
+###############################################################################
+# Other Functions
 
 def yt_api(path, **params):
     params.setdefault('key', prefs.get('key'))
@@ -173,7 +176,9 @@ def manage_list_setting(name, action, items=[]):
 
     prefs[name] = ",".join(list_)
 
-################################################################################
+
+###############################################################################
+# Entry Points
 
 
 def msg_cb(word, word_eol, userdata):
@@ -233,23 +238,33 @@ def yttcmd_cb(word, word_eol, userdata):
     return hexchat.EAT_HEXCHAT
 
 
-pref_prefix = __module_name__.replace(" ", "_").lower()
-prefs = PluginPref(pref_prefix)
+###############################################################################
+# Script entry point
+
+def main():
+    ###########################################################################
+    # Manage Preferences
+    global prefs
+
+    pref_prefix = __module_name__.replace(" ", "_").lower()
+    prefs = PluginPref(pref_prefix)
 
 
-################################################################################
+    ###########################################################################
+    # Register Hooks
+
+    hexchat.hook_command("ytt", yttcmd_cb, help=HELP_STR)
+
+    private_msg_events = ("Notice", "Private Message", "Private Action")
+    for event in private_msg_events:
+        hexchat.hook_print(event, privmsg_cb)
+
+    public_msg_events = ("Channel Message", "Action", "Your Message", "Your Action")
+    for event in public_msg_events:
+        hexchat.hook_print(event, msg_cb)
+
+    print(__module_name__, __module_version__, "loaded")
 
 
-# Hooking
-hexchat.hook_command("ytt", yttcmd_cb, help=HELP_STR)
-
-private_msg_events = ("Notice", "Private Message", "Private Action")
-for event in private_msg_events:
-    hexchat.hook_print(event, privmsg_cb)
-
-public_msg_events = ("Channel Message", "Action", "Your Message", "Your Action")
-for event in public_msg_events:
-    hexchat.hook_print(event, msg_cb)
-
-
-print(__module_name__, __module_version__, "loaded")
+if __name__ == '__main__':
+    main()
