@@ -119,7 +119,7 @@ short = re.compile(r"(?:(?:https?\://)?(?:\w+\.)?(?:youtube|youtu)(?:\.\w+){1,2}
 
 
 def find_ids(text):
-    """Finds all (unique) video ids in a given text, sorted by start pos."""
+    """Find all (unique) video ids in a given text, sorted by start pos."""
     ids = set()
 
     for reg in (normal, short):
