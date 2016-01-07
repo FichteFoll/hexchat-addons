@@ -209,36 +209,42 @@ def privmsg_cb(word, word_eol, userdata):
 
 
 def yttcmd_cb(word, word_eol, userdata):
-    # Standardize args
-    args = tuple(map(str.lower, word[1:]))
-
-    if not args:
+    # print help if no sub-command
+    if not len(word) > 1:
         print(HELP_STR)
         return hexchat.EAT_HEXCHAT
 
-    if args[0] == 'get':
-        if len(args) == 1:
-            print(HELP_MAP[args[0]])
-            return hexchat.EAT_HEXCHAT
+    sub_cmd, *args = word[1:]
 
+    if sub_cmd == '_prefs':  # debug
+        print(list(prefs.items()))
+        return hexchat.EAT_HEXCHAT
+
+    # print help for sub-commands (if valid)
+    if not args:
+        print(HELP_MAP.get(sub_cmd, HELP_STR))
+        return hexchat.EAT_HEXCHAT
+
+    # actual sub-commands
+    if sub_cmd == 'get':
         vids = find_ids(word_eol[2])
         if not vids:
             print("Could not find any video id in input")
         else:
             process_vids(vids, print_yt_title)
-    elif args[0] == 'key':
-        if args[1].lower() == 'get':
+    elif sub_cmd == 'key':
+        if args[0].lower() == 'get':
             print(prefs.get('key', "No key set"))
-        elif args[1].lower() == 'set' and len(args) == 3:
+        elif args[0].lower() == 'set' and len(args) == 2:
             prefs['key'] = args[1]
             print("Key set")
         else:
             print(HELP_MAP[sub_cmd])
-    elif args[0] in ('announce', 'mute'):
-        if len(args) < 2:
-            print(HELP_MAP[args[0]])
-            return hexchat.EAT_HEXCHAT
-        manage_list_setting(args[0], args[1], args[2:])
+    elif sub_cmd in ('announce', 'mute'):
+        action, *channels = args
+        # lowercase the channels before passing to list handler
+        channels = map(str.lower, channels)
+        manage_list_setting(sub_cmd, action, channels)
     else:
         print(HELP_STR)
 
