@@ -68,15 +68,15 @@ def print(*args, **kwargs):
     __builtins__.print(*args, **kwargs)
 
 
-def delayed_command(context, timeout, cmd):
+def set_timeout(callback, delay):
     handler = None
 
-    def callback(userdata):
-        nonlocal handler, context, cmd
+    def callback_handler(userdata):
+        nonlocal handler
         hexchat.unhook(handler)
-        context.command(cmd)
+        callback()
 
-    handler = hexchat.hook_timer(timeout, callback)
+    handler = hexchat.hook_timer(timeout, callback_handler)
 
 
 ###############################################################################
@@ -132,13 +132,18 @@ def find_ids(text):
 def say_yt_title(title):
     message = "\002Title:\002 " + title
 
-    # Delay our "say" because otherwise it will occur before we actuallysent the video
-    # url.
+    # Delay our "say" because otherwise it will occur before we have actually
+    # sent the video url.
     context = hexchat.get_context()
-    delayed_command(context, 50, "say {message}".format(**locals()))
+
+    def say_cb():
+        context.command("say {message}".format(message=message))
+
+    set_timeout(say_cb, 1)
 
 
 def print_yt_title(title):
+    # cannot easily delay like say because of context switch
     message = "\002Title:\002 " + title
     print(message)
 
