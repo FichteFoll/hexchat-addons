@@ -3,14 +3,19 @@
 Exported classes:
 
 - PluginPref
+- SerializablePluginPref
+- JSONPluginPref
 """
 
+from abc import ABCMeta, abstractmethod
 from collections.abc import MutableMapping
+import json
 
 import hexchat
 
 
-__version__ = (0, 2, 0, '+')
+__version__ = "0.3.0"
+versioninfo = tuple(map(int, __version__.split(".")))
 __author__ = "FichteFoll <fichtefoll2@googlemail.com>"
 
 
@@ -143,3 +148,109 @@ class PluginPref(MutableMapping):
             raise TypeError("Key must be a string")
         if not hexchat.del_pluginpref(self._keyname(key)):
             raise RuntimeError("Could not delete %s" + key)
+
+    def get_version(self):
+        """Retrieve the currently stored preferences' version.
+
+        Returns an integer or a tuple of integers, depending on what was set.
+        Returns `None` if not set.
+        Returns `NotImplemented` if parsing the version failed.
+
+        Set the version with `set_version`.
+        """
+        version_str = hexchat.get_pluginpref(self.version_pref_name)
+        if not version_str:
+            return
+        version_split = version_str.split('.')
+        try:
+            if len(version_split) == 1:
+                return int(version_split[0])
+            else:
+                return tuple(map(int, version_split))
+        except ValueError:
+            return NotImplemented
+
+    def set_version(self, version):
+        """Set the currently stored preferences' version.
+
+        `version` must be an integer or a tuple of integers
+        for easier comparison.
+
+        Set the version with `set_version`.
+        """
+        if isinstance(version, int):
+            version_str = str(version)
+        elif (isinstance(version, tuple)
+              and all(isinstance(i, int) for i in version)):
+            version_str = ".".join(map(str, version))
+        else:
+            raise TypeError("version must be an integer or a tuple of integers")
+
+        return hexchat.set_pluginpref(self.version_pref_name, version_str)
+
+    version = property(
+        get_version,
+        set_version,
+        doc="""Property for permanent storage of the current preferences' version.
+
+        Useful for migration.
+
+        See get_version and set_version for details."""
+    )
+
+
+class SerializablePluginPref(PluginPref, metaclass=ABCMeta):
+    """Abstract base class for serializable interfaces on top of PluginPref.
+
+    Requires definitions of the two methods:
+    - serialize(obj)
+    - deserialize(obj)
+    which get called before writing to
+    and after reading from PluginPref respectively.
+    """
+    @abstractmethod
+    def serialize(self, obj):
+        """Serialize `obj` into another object."""
+        return obj
+
+    @abstractmethod
+    def deserialize(self, obj):
+        """Deserialize `obj` into another object."""
+        return obj
+
+    def __getitem__(self, key):
+        value = super().__getitem__(key)
+        return self.deserialize(value)
+
+    def __setitem__(self, key, value):
+        value = self.serialize(value)
+        super().__setitem__(key, value)
+
+
+class JSONPluginPref(SerializablePluginPref):
+    """MutableMapping built on top of PluginPref with JSON serialization.
+
+    Overcomes shortcomings of default PluginPref implementation
+    by (de-)serializing all values as strings
+    and thus supports all serializable formats.
+    Notably: dict, list, real boolans, None
+
+    Raises `json.JSONDecodeError` when decoding a value failed
+    and `TypeError` if the specified value is not serializable.
+
+    If you want to change JSON (de-)serialidation,
+    subclass this class or SerializablePluginPref
+    and override `serialize` and `deserialize`
+    with a method of your choice.
+
+    Usage of `super()` allows nesting of SerializablePluginPref subclasses
+    other other interesting subclassing models.
+    """
+
+    def serialize(self, obj):
+        obj = json.dumps(obj)
+        return super().serialize(obj)
+
+    def deserialize(self, obj):
+        obj = super().serialize(obj)
+        return json.loads(obj)
