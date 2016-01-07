@@ -32,18 +32,17 @@ __module_description__ = "Scans text for YouTube video urls and displays or anno
 __module_author__      = "FichteFoll <fichtefoll2@googlemail.com>"
 
 
-# TODO make this a config (and add command)
-API_KEY = ""
-
+# TODO improve this
 HELP_STR = """\
 Usage:
 /ytt \002get\002 <url> {<url>} - Get titles of passed url(s)
-/ytt \002announce\002 [add | remove | list] <channel> - Manage list of channels where video titles should be announced
-/ytt \002mute\002 [add | remove | list] <channel> - Manage list of channels where video urls should be ignored
-By default, YouTube Title will only print the video's title for you.
-"""
+/ytt \002announce\002 [ list | [add | remove] <channel> {<channel>} ] - Manage list of channels where video titles should be announced
+/ytt \002mute\002 [ list | [add | remove] <channel> {<channel>} ] - Manage list of channels where video urls should be ignored
+/ytt \002key\002 [get | set <key>] - Get/Set the YouTube API key
+By default, YouTube Title will only print the video's title for you."""
 
-HELP_MAP = dict(zip(("get", "announce", "mute"), HELP_STR.splitlines()[1:-1]))
+HELP_MAP = dict(zip(('get', 'announce', 'mute', 'key'),
+                    HELP_STR.splitlines()[1:-1]))
 
 PRINT_PREFIX = "*ytt*"
 
@@ -79,7 +78,9 @@ def delayed_command(context, timeout, cmd):
 
 
 def yt_api(path, **params):
-    params.setdefault("key", API_KEY)
+    params.setdefault('key', prefs.get('key'))
+    if not params['key']:
+        raise TypeError("You must set an API key using `/ytt key set <key>`")
     return requests.get("https://www.googleapis.com/youtube/v3/" + path,
                         params=params)
 
@@ -138,9 +139,13 @@ def print_yt_title(title):
 
 
 def process_vids(vids, title_handler):
-    titles = get_yt_titles(vids)
-    for title in titles:
-        title_handler(title)
+    try:
+        titles = get_yt_titles(vids)
+    except (requests.exceptions.HTTPError, TypeError) as e:
+        print("Could not retrieve video title(s):\n%s" % e)
+    else:
+        for title in titles:
+            title_handler(title)
 
 
 def manage_list_setting(name, action, items=[]):
@@ -209,6 +214,14 @@ def yttcmd_cb(word, word_eol, userdata):
             print("Could not find any video id in input")
         else:
             process_vids(vids, print_yt_title)
+    elif args[0] == 'key':
+        if args[1].lower() == 'get':
+            print(prefs.get('key', "No key set"))
+        elif args[1].lower() == 'set' and len(args) == 3:
+            prefs['key'] = args[1]
+            print("Key set")
+        else:
+            print(HELP_MAP[sub_cmd])
     elif args[0] in ('announce', 'mute'):
         if len(args) < 2:
             print(HELP_MAP[args[0]])

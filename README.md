@@ -35,15 +35,16 @@ Note: Only works if at the end of input.
 Print (or announce) a YouTube video's title.
 
 [**Requires a Google API key!**](#how-to-obtain-a-google-api-key)
-(which needs to be inserted in the source, for now)
+Set it using `/ytt key set <key>`.
 
 By default, it will only print the title for you locally.
 
-- `\ytt get` prints titles of the videos specified
-- `\ytt announce` manages a list of channels
+- `/ytt get` prints titles of the videos specified
+- `/ytt announce` manages a list of channels
   where the title should be announced (i.e. `/say`)
-- `\ytt mute` manages a list of channels
+- `/ytt mute` manages a list of channels
   where YouTube urls should be ignored
+- `/ytt key` manages the stored key
 
 
 #### How to obtain a Google API key
