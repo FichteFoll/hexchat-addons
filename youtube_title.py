@@ -62,8 +62,8 @@ def print(*args, **kwargs):
     if args:
         args = list(args)
         for i, arg in enumerate(args):
-            if isinstance(args[0], str) and "\n" in args[0]:
-                args[i] = ("\n" + prefix).join(arg.splitlines())
+            if isinstance(arg, str):
+                args[i] = arg.replace("\n", "\n" + prefix)
         args[0] = prefix + str(args[0])
     __builtins__.print(*args, **kwargs)
 
