@@ -9,13 +9,12 @@ using its Python plugin.
 
 ### [pluginpref](./pluginpref)
 
-Abstractions for hexchat's `hexchat.*_pluginpref` interface,
+Abstractions for hexchat's `hexchat.*_pluginpref` API,
 wrapped in a MutableMapping.
-All settings are automatically prefixed with,
-for example, the plugin name
+All settings are prefixed with the plugin name internally
 to prevent collisions.
 
-Its interface is essentially a `dict`.
+The interface is essentially a `dict`.
 For details, refer to docstring or tests (in same directory).
 
 
@@ -23,9 +22,9 @@ For details, refer to docstring or tests (in same directory).
 
 ### [current_channel_replace.py](./current_channel_replace.py)
 
-Replace the `#` character with the current channel
+Expands a preceding `#` character to the current channel
 when you press space or tab after it.
-Insert literal space when holding shift key.
+Hold shift key to insert literal space.
 
 Note: Only works if at the end of input.
 
