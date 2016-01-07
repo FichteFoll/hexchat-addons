@@ -108,7 +108,7 @@ def get_yt_titles(vids):
     mapping = {video['id']: video['snippet']['title']
                for video in data['items']}
 
-    return [mapping[vid] if vid in mapping else "Video not found"
+    return [mapping.get(vid, "Video for %s not found" % vid)
             for vid in vids]
 
 
