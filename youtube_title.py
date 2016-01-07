@@ -8,7 +8,7 @@ import requests
 import hexchat
 
 try:
-    from .pluginpref import PluginPref
+    from .pluginpref import PluginPref, JSONPluginPref
 except SystemError:
     # Add addons path to sys.path for win32
     # See https://github.com/hexchat/hexchat/issues/1396
@@ -20,16 +20,18 @@ except SystemError:
         if addons_path not in sys.path:
             sys.path.append(addons_path)
 
-    from pluginpref import PluginPref
+    from pluginpref import PluginPref, JSONPluginPref
 
 
 ###############################################################################
 
 
 __module_name__        = "YouTube Title"
-__module_version__     = "0.2.3+"
+__module_version__     = "0.3.0"
 __module_description__ = "Scans text for YouTube video urls and displays or announces the titles"
 __module_author__      = "FichteFoll <fichtefoll2@googlemail.com>"
+
+versioninfo = tuple(map(int, __module_version__.split(".")))
 
 
 # TODO improve this
@@ -152,19 +154,19 @@ def process_vids(vids, title_handler):
 
 
 def manage_list_setting(name, action, items=[]):
-    list_ = prefs.get(name, "").split(",")
+    list_ = prefs.get(name, [])
 
     if action == 'list':
         list_str = " ".join(list_)
         print("{name} list: {list_str}".format(**locals()))
-    elif items and action == "add":
+    elif items and action == 'add':
         for item in items:
             if item not in list_:
                 list_.append(item)
                 print("Added {item} to {name} list".format(**locals()))
             else:
                 print("{item} already in {name} list".format(**locals()))
-    elif items and action == "remove":
+    elif items and action == 'remove':
         for item in items:
             if item in list_:
                 list_.remove(item)
@@ -174,21 +176,21 @@ def manage_list_setting(name, action, items=[]):
     else:
         print(HELP_MAP[name])
 
-    prefs[name] = ",".join(list_)
+    prefs[name] = list_
 
 
 ###############################################################################
 # Entry Points
 
-
 def msg_cb(word, word_eol, userdata):
     channel = hexchat.get_info('channel').lower()
-    callback = print_yt_title
 
-    if channel in prefs.get('mute', "").split(","):
+    if channel in prefs.get('mute', tuple()):
         return
-    if channel in prefs.get('announce', "").split(","):
+    elif channel in prefs.get('announce', tuple()):
         callback = say_yt_title
+    else:
+        callback = print_yt_title
 
     vids = find_ids(word[1])
     if vids:
@@ -246,9 +248,31 @@ def main():
     # Manage Preferences
     global prefs
 
-    pref_prefix = __module_name__.replace(" ", "_").lower()
-    prefs = PluginPref(pref_prefix)
+    prefs = JSONPluginPref(__module_name__)
 
+    if prefs.version is NotImplemented:
+        print("There was an error retrieving the preferences' version.\n"
+              "It is advised to seek help from the author (FichteFoll)"
+              "and run around in circles.")
+        return
+
+    if prefs.version is None:  # before 0.3.0
+        # convert preferences to JSON storage
+        bare_prefs = PluginPref(__module_name__, prefix_sep="_")
+        for key, value in bare_prefs.items():
+            if key in ('announce', 'mute'):
+                value = list(filter(None, value.split(",")))
+            prefs[key] = value
+            del bare_prefs[key]
+
+        prefs.version = (0, 3, 0)  # hardcode for further migrations
+        print("Converted preference storage to 0.3.0")
+
+    # if prefs.version < (0, 3, 4):
+    #     pass
+
+    # Write current version at last
+    prefs.version = versioninfo
 
     ###########################################################################
     # Register Hooks
