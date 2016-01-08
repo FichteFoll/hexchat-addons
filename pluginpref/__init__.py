@@ -111,6 +111,10 @@ class PluginPref(MutableMapping):
                 keys.add(key[len(shared_prefix):])
         return keys
 
+    def __contains__(self, key):
+        # More efficient than default
+        return key in self.keys()
+
     def __iter__(self):
         return iter(self.keys())
 
