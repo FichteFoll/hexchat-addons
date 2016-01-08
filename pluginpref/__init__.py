@@ -35,12 +35,13 @@ class PluginPref(MutableMapping):
     but can be overridden.
 
 
-    Limitations of pluginpref:
+    Limitations of pluginpref (as provided by hexchat):
 
     - Only supports strings, numbers and booleans.
     - Not lists, dicts, `None`, or arbitrary objects.
       Use the json or pickle modules to serialize those to strings.
     - Booleans are converted to numbers.
+    - Strings consisting of only digits are also converted to numbers.
 
 
     Example usage:
@@ -239,6 +240,9 @@ class JSONPluginPref(SerializablePluginPref):
     and thus supports all serializable formats.
     Notably: dict, list, real boolans, None
 
+    Note that dictionary keys are converted to strings,
+    as by `json.dumps`.
+
     Raises `json.JSONDecodeError` when decoding a value failed
     and `TypeError` if the specified value is not serializable.
 
@@ -256,5 +260,10 @@ class JSONPluginPref(SerializablePluginPref):
         return super().serialize(obj)
 
     def deserialize(self, obj):
+        # For some reason, hexchat's pluginpref auto-converts strings
+        # containing only digits to integers. We have to convert them back
+        # here.
+        if isinstance(obj, int):
+            obj = str(obj)
         obj = super().serialize(obj)
         return json.loads(obj)
