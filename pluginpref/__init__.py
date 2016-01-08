@@ -14,7 +14,7 @@ import json
 import hexchat
 
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 versioninfo = tuple(map(int, __version__.split(".")))
 __author__ = "FichteFoll <fichtefoll2@googlemail.com>"
 
