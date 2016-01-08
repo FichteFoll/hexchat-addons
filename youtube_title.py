@@ -76,7 +76,7 @@ def set_timeout(callback, delay):
         hexchat.unhook(handler)
         callback()
 
-    handler = hexchat.hook_timer(timeout, callback_handler)
+    handler = hexchat.hook_timer(delay, callback_handler)
 
 
 ###############################################################################
