@@ -27,7 +27,7 @@ except SystemError:
 
 
 __module_name__        = "YouTube Title"
-__module_version__     = "0.3.0"
+__module_version__     = "0.3.1"
 __module_description__ = "Scans text for YouTube video urls and displays or announces the titles"
 __module_author__      = "FichteFoll <fichtefoll2@googlemail.com>"
 
@@ -55,7 +55,7 @@ prefs = None
 ###############################################################################
 # General Ultilities
 
-def print(*args, **kwargs):
+def print(*args, context=None, **kwargs):
     """Use rocket science to prepend 'PRINT_PREFIX\t' to each line for `print`.
     """
     prefix = PRINT_PREFIX + "\t"
@@ -65,7 +65,10 @@ def print(*args, **kwargs):
             if isinstance(arg, str):
                 args[i] = arg.replace("\n", "\n" + prefix)
         args[0] = prefix + str(args[0])
-    __builtins__.print(*args, **kwargs)
+    if context:
+        context.prnt(" ".join(args))
+    else:
+        __builtins__.print(*args, **kwargs)
 
 
 def set_timeout(callback, delay):
@@ -135,17 +138,17 @@ def say_yt_title(title):
     # Delay our "say" because otherwise it will occur before we have actually
     # sent the video url.
     context = hexchat.get_context()
-
-    def say_cb():
-        context.command("say {message}".format(message=message))
-
-    set_timeout(say_cb, 1)
+    set_timeout(lambda: context.command("say {message}".format(message=message)),
+                1)
 
 
 def print_yt_title(title):
-    # cannot easily delay like say because of context switch
     message = "\002Title:\002 " + title
-    print(message)
+    # Same as in say_yt_title, except the print would otherwise be printed before
+    # the received message.
+    context = hexchat.get_context()
+    set_timeout(lambda: print(message, context=context),
+                1)
 
 
 def process_vids(vids, title_handler):
