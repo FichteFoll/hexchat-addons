@@ -12,6 +12,11 @@ import threading
 
 import hexchat
 
+
+__version__ = "0.1.0"
+versioninfo = tuple(map(int, __version__.split(".")))
+__author__ = "FichteFoll <fichtefoll2@googlemail.com>"
+
 __all__ = (
     'only_on',
     'no_recursion'
