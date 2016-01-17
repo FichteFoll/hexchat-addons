@@ -37,10 +37,10 @@ versioninfo = tuple(map(int, __module_version__.split(".")))
 # TODO improve this
 HELP_STR = """\
 Usage:
-/ytt \002get\002 <url> {<url>} - Get titles of passed url(s)
-/ytt \002announce\002 [ list | [add | remove] <channel> {<channel>} ] - Manage list of channels where video titles should be announced
-/ytt \002mute\002 [ list | [add | remove] <channel> {<channel>} ] - Manage list of channels where video urls should be ignored
-/ytt \002key\002 [get | set <key>] - Get/Set the YouTube API key
+/YTT \002GET\002 <url> {<url>} - Get titles of passed url(s)
+/YTT \002ANNOUNCE\002 [ LIST | [ADD | REMOVE] <channel> {<channel>} ] - Manage list of channels where video titles should be announced
+/YTT \002MUTE\002 [ LIST | [ADD | REMOVE] <channel> {<channel>} ] - Manage list of channels where video urls should be ignored
+/YTT \002KEY\002 [GET | SET <key>] - Get/Set the YouTube API key
 By default, YouTube Title will only print the video's title for you."""
 
 HELP_MAP = dict(zip(('get', 'announce', 'mute', 'key'),
@@ -291,7 +291,7 @@ def main():
     ###########################################################################
     # Register Hooks
 
-    hexchat.hook_command("ytt", yttcmd_cb, help=HELP_STR)
+    hexchat.hook_command("YTT", yttcmd_cb, help=HELP_STR)
 
     private_msg_events = ("Notice", "Private Message", "Private Action")
     for event in private_msg_events:
