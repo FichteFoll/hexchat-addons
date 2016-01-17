@@ -7,18 +7,34 @@ using its Python plugin.
 
 ## Modules
 
-### [pluginpref](./pluginpref)
+### [pluginpref](./pluginpref/__init__.py)
 
 Abstractions for hexchat's `hexchat.*_pluginpref` API,
 wrapped in a MutableMapping.
 All settings are prefixed with the plugin name internally
 to prevent collisions.
+Supports being wrapped with a JSON serializer,
+thus allowing to store lists and dictionaries too.
 
 The interface is essentially a `dict`.
 For details, refer to docstring or tests (in same directory).
 
+### [util](./util/__init__.py)
+
+Collection of utility functions.
+
+Refer to the source code and docstrings for details.
+
 
 ## Addons
+
+### [better_raw_modes.py](./better_raw_modes.py)
+
+Transforms raw mode messages
+to remove redundant information.
+
+Requires `/set irc_raw_modes 1`.
+
 
 ### [current_channel_replace.py](./current_channel_replace.py)
 
@@ -27,6 +43,17 @@ when you press space or tab after it.
 Hold shift key to insert literal space.
 
 Note: Only works if at the end of input.
+
+
+### [my_twitch.py](./my_twitch.py)
+
+Mutes spammy +o, -o 
+as well as join and part messages 
+if there are more than a certain number of users in a channel.
+
+Requires `/CAP req :twitch.tv/membership`
+to be sent on the network
+(suggested to add to "Connect Commands").
 
 
 ### [youtube_title.py](./youtube_title.py)
