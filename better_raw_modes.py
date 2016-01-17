@@ -1,3 +1,11 @@
+"""Transforms raw mode messages to remove redundant information.
+
+FichteFoll sets mode #channel +o FichteFoll -> FichteFoll sets mode +o FichteFoll
+FichteFoll sets mode FichteFoll +i -> FichteFoll sets mode :+i
+
+Requires the irc_raw_modes setting to be enabled
+(`/set irc_raw_modes 1`).
+"""
 import hexchat
 
 try:
@@ -26,10 +34,7 @@ __module_description__ = "Enhances display of the 'Raw Modes' text event"
 
 @no_recursion
 def raw_modes_cb(word, word_eol, event):
-    """Transforms mode messages to remove redundant information.
-
-    Self-modes get ":" prepended.
-
+    """
     ['FichteFoll', '#channel +o FichteFoll'] => ['FichteFoll', '+o FichteFoll']
     ['FichteFoll', 'FichteFoll :+Tix'] => ['FichteFoll', ':+Tix']
     ['FichteFoll', 'FichteFoll +Tix'] => ['FichteFoll', ':+Tix']

@@ -1,3 +1,16 @@
+"""Personal Twitch enhancements.
+
+Mutes +o and -o mode messages,
+because the server spams these regularly
+for no apparent reason (probably netsplits).
+
+Also mutes join and part events for channels
+with more users than a specified threshold.
+
+Requires `/CAP req :twitch.tv/membership`
+to be sent on the network
+(suggested to add to "Connect Commands").
+"""
 import hexchat
 
 try:
