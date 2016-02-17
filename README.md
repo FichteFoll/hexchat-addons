@@ -48,7 +48,7 @@ Hold shift key to insert literal space.
 Note: Only works if at the end of input.
 
 
-### [my_twitch.py](./my_twitch.py)
+### [ff_twitch.py](./ff_twitch.py)
 
 Mutes spammy +o, -o 
 as well as join and part messages 
