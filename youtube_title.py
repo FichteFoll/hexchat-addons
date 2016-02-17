@@ -9,6 +9,7 @@ import hexchat
 
 try:
     from .pluginpref import PluginPref, JSONPluginPref
+    from .util import set_timeout
 except SystemError:
     # Add addons path to sys.path for win32
     # See https://github.com/hexchat/hexchat/issues/1396
@@ -21,13 +22,14 @@ except SystemError:
             sys.path.append(addons_path)
 
     from pluginpref import PluginPref, JSONPluginPref
+    from util import set_timeout
 
 
 ###############################################################################
 
 
 __module_name__        = "YouTube Title"
-__module_version__     = "0.3.1"
+__module_version__     = "0.3.2"
 __module_description__ = "Scans text for YouTube video urls and displays or announces the titles"
 __module_author__      = "FichteFoll <fichtefoll2@googlemail.com>"
 
@@ -69,17 +71,6 @@ def print(*args, context=None, **kwargs):
         context.prnt(" ".join(args))
     else:
         __builtins__.print(*args, **kwargs)
-
-
-def set_timeout(callback, delay):
-    handler = None
-
-    def callback_handler(userdata):
-        nonlocal handler
-        hexchat.unhook(handler)
-        callback()
-
-    handler = hexchat.hook_timer(delay, callback_handler)
 
 
 ###############################################################################
@@ -138,8 +129,7 @@ def say_yt_title(title):
     # Delay our "say" because otherwise it will occur before we have actually
     # sent the video url.
     context = hexchat.get_context()
-    set_timeout(lambda: context.command("say {message}".format(message=message)),
-                1)
+    set_timeout(lambda: context.command("say {message}".format(message=message)))
 
 
 def print_yt_title(title):
@@ -147,8 +137,7 @@ def print_yt_title(title):
     # Same as in say_yt_title, except the print would otherwise be printed before
     # the received message.
     context = hexchat.get_context()
-    set_timeout(lambda: print(message, context=context),
-                1)
+    set_timeout(lambda: print(message, context=context))
 
 
 def process_vids(vids, title_handler):
