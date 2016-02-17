@@ -9,9 +9,9 @@ __module_description__ = ('Replaces "#" with current channel on tab and space ke
 KEY_TAB = 65289
 KEY_SPACE = 32
 
-KEY_MOD_SHIFT = 1
-KEY_MOD_CTRL = 4
-KEY_MOD_ALT = 8
+KEY_MOD_SHIFT = 1 << 0
+KEY_MOD_CTRL = 1 << 2
+KEY_MOD_ALT = 1 << 3
 
 
 def on_key_press(word, word_eol, userdata):
@@ -36,7 +36,7 @@ def on_key_press(word, word_eol, userdata):
         hexchat.command("settext %s" % msg)
         hexchat.command("setcursor %d" % (pos + len(channel) - 1))
 
+if __name__ == '__main__':
+    hexchat.hook_print('Key Press', on_key_press)
 
-hexchat.hook_print('Key Press', on_key_press)
-
-print("%s %s loaded" % (__module_name__, __module_version__))
+    print("%s %s loaded" % (__module_name__, __module_version__))
