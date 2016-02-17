@@ -79,7 +79,7 @@ Works with ZNC bouncers
 and also works with \*buffextras module 
 using [buffextras.py][].
 
-[smartparty.py]: https://github.com/TingPing/plugins/blob/master/HexChat/smartparts.py
+[smartparts.py]: https://github.com/TingPing/plugins/blob/master/HexChat/smartparts.py
 [buffextras.py]: https://github.com/knitori/tools/blob/master/hexchat/buffextras.py
 
 
