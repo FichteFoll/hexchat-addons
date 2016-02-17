@@ -58,6 +58,31 @@ Automatically requests the `twitch.tv/membership` and `twitch.tv/commands`
 capabilities from the network.
 
 
+### [smart_filter.py](./smart_filter.py)
+
+Based on [smartparts.py][].
+
+Mutes a variety of events for users that never talk,
+or haven't talked in a certain period
+(60 minutes by default).
+
+- Muted events are: Joins, Parts, Renames and Mode Changes.
+- If a recently joined user starts talking,
+  his 'Join' event is late-emitted with the original timestamp.
+- Handles renames.
+- If a user that previously talked 
+  parts and joins again (or renames),
+  the events are shown.
+- Events for nicks in your notify list are always shown.
+
+Works with ZNC bouncers 
+and also works with \*buffextras module 
+using [buffextras.py][].
+
+[smartparty.py]: https://github.com/TingPing/plugins/blob/master/HexChat/smartparts.py
+[buffextras.py]: https://github.com/knitori/tools/blob/master/hexchat/buffextras.py
+
+
 ### [youtube_title.py](./youtube_title.py)
 
 Print (or announce) a YouTube video's title.
