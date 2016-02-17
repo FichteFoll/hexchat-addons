@@ -1,10 +1,13 @@
 """Transforms raw mode messages to remove redundant information.
 
-FichteFoll sets mode #channel +o FichteFoll -> FichteFoll sets mode +o FichteFoll
-FichteFoll sets mode FichteFoll +i -> FichteFoll sets mode :+i
+FichteFoll sets mode #channel +o FichteFoll => FichteFoll sets mode +o FichteFoll
+FichteFoll sets mode FichteFoll +i => FichteFoll sets mode :+i
 
 Requires the irc_raw_modes setting to be enabled
 (`/set irc_raw_modes 1`).
+
+Note that this modifies the 'Raw Modes' event in-place
+and other plugins *could* break because of it.
 """
 import hexchat
 
@@ -28,8 +31,8 @@ except SystemError:
 
 __module_name__ = "Better Raw Modes"
 __module_author__ = "FichteFoll"
-__module_version__ = "0.1.0"
-__module_description__ = "Enhances display of the 'Raw Modes' text event"
+__module_version__ = "0.2.0"
+__module_description__ = "Improves display of the 'Raw Modes' text event"
 
 
 @no_recursion
@@ -48,13 +51,12 @@ def raw_modes_cb(word, word_eol, event):
     else:
         return hexchat.EAT_NONE
 
-    hexchat.emit_print(event, word[0], " ".join(mode_args))
-    return hexchat.EAT_HEXCHAT
+    hexchat.emit_print('Raw Modes', word[0], " ".join(mode_args))
+    return hexchat.EAT_ALL
 
 
 def main():
-    hexchat.hook_print('Raw Modes', raw_modes_cb, 'Raw Modes')
-    hexchat.get_info("")
+    hexchat.hook_print('Raw Modes', raw_modes_cb, priority=hexchat.PRI_HIGHEST)
 
     print(__module_name__, __module_version__, "loaded")
 

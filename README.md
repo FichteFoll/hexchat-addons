@@ -35,6 +35,9 @@ to remove redundant information.
 
 Requires `/set irc_raw_modes 1`.
 
+May cause incompatibilities with other scripts
+that rely on a certain Raw Modes format.
+
 
 ### [current_channel_replace.py](./current_channel_replace.py)
 
