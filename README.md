@@ -51,9 +51,8 @@ Mutes spammy +o, -o
 as well as join and part messages 
 if there are more than a certain number of users in a channel.
 
-Requires `/CAP req :twitch.tv/membership`
-to be sent on the network
-(suggested to add to "Connect Commands").
+Automatically requests the `twitch.tv/membership` and `twitch.tv/commands`
+capabilities from the network.
 
 
 ### [youtube_title.py](./youtube_title.py)

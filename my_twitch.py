@@ -14,7 +14,7 @@ to be sent on the network
 import hexchat
 
 try:
-    from .util import only_on
+    from .util import only_on, set_timeout
 except SystemError:
     # Add addons path to sys.path for win32
     # See https://github.com/hexchat/hexchat/issues/1396
@@ -26,14 +26,14 @@ except SystemError:
         if addons_path not in sys.path:
             sys.path.append(addons_path)
 
-    from util import only_on
+    from util import only_on, set_timeout
 
 
 ###############################################################################
 
 __module_name__ = "My Twitch Enhancements"
 __module_author__ = "FichteFoll"
-__module_version__ = "0.3.0"
+__module_version__ = "0.4.0"
 __module_description__ = "Enhancements for Twitch.tv"
 
 # TODO make configurable
@@ -72,7 +72,8 @@ def eat_all_cb(word, word_eol, event):
 def raw_modes_cb(word, word_eol, userdata):
     """Block unnecessarily spammy mode changes."""
     # ['FichteFoll', '#channel +o FichteFoll']
-    if word[1].split()[1] in ("+o", "-o"):
+    # ['FichteFoll', '+o FichteFoll']  # my raw modes modifications
+    if word[1].split()[-2] in ('+o', '-o'):
         # Just block all mode events like this
         # because twitch's IRC is fucking broken
         # and sends mode changes for no reason
@@ -86,14 +87,27 @@ def raw_modes_cb(word, word_eol, userdata):
     return hexchat.EAT_NONE
 
 
+def caps_cb(word, word_eol, userdata):
+    desired_caps = {'twitch.tv/membership', 'twitch.tv/commands'}
+    available_caps = set(word[1].split())
+    require_caps_str = " ".join(desired_caps & available_caps)
+    if require_caps_str:
+        hexchat.command("CAP REQ :%s" % require_caps_str)
+        context = hexchat.get_context()
+        set_timeout(lambda: context.emit_print('Capability Request', require_caps_str))
+    return hexchat.EAT_NONE
+
+
 def main():
-    for evt in ('Join', 'Part'):  # 'Part with Reason', likely not used
-        hexchat.hook_print(evt, joinpart_cb, evt)
+    for evt in ('Join', 'Part'):  # 'Part with Reason' likely not necessary
+        hexchat.hook_print(evt, joinpart_cb, evt, priority=hexchat.PRI_HIGH)
 
     # Hook modes
-    hexchat.hook_print('Raw Modes', raw_modes_cb, hexchat.PRI_HIGH)
+    hexchat.hook_print('Raw Modes', raw_modes_cb, priority=hexchat.PRI_HIGH)
     for evt in ('Channel Operator', 'Channel DeOp'):
-        hexchat.hook_print(evt, eat_all_cb, evt)
+        hexchat.hook_print(evt, eat_all_cb, evt, priority=hexchat.PRI_HIGH)
+
+    hexchat.hook_print('Capability List', caps_cb)
 
     print(__module_name__, __module_version__, "loaded")
 
