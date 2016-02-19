@@ -23,7 +23,7 @@ import hexchat
 
 __module_name__ = 'SmartFilter'
 __module_author__ = 'FichteFoll'
-__module_version__ = '3.0.0'
+__module_version__ = '3.0.1'
 __module_description__ = 'Intelligently hide parts, joins, user modes, and nick changes'
 
 # TODO only hide +-qaohv in Raw Modes
@@ -186,8 +186,10 @@ def join_cb(word, word_eol, userdata, attrs):
     if check_notify(nick):
         return hexchat.EAT_NONE
     else:
-        jmap.add(nick, attrs.time or int(time.time()), word)
-        return check_lasttalk(nick)
+        eat = check_lasttalk(nick)
+        if eat:
+            jmap.add(nick, attrs.time or int(time.time()), word)
+        return eat
 
 
 def part_cb(word, word_eol, userdata):
