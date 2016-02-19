@@ -1,4 +1,17 @@
+# user data and binaries
 *.sublime-*
 *.pyc
 *.dll
-_do_not_load/
+
+# temporary scripts
+_*/
+
+# external scripts
+buffextras.py
+pmcolor.py
+pytabcomplete.py
+mymsg.py
+script.py
+twitch.py
+undoclose.py
+requiresasl.py
