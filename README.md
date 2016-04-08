@@ -4,19 +4,56 @@ FichteFoll's Hexchat addons
 This is just a compilation of modules and addons for hexchat,
 using its Python plugin.
 
+All scripts are tested 
+to work on **Hexchat 2.12.0**
+with **Python 3.5** as plugin engine
+(and Windows 7 as OS).
+
+## Installation
+
+1. Click the link to opening the source file on Github
+2. Right-clicking the "Raw" button on the right side
+3. Select "Save Link as...".
+4. Download the file to your Hexchat's *addons* folder,
+   where they will automatically be loaded from on startup.  
+   Example: `'C:\\Users\\Fichte\\AppData\\Roaming\\HexChat\\addons'`
+
+The following Hexchat command 
+will print the path to your addons folder:
+
+```
+/py exec import os; os.path.join(hexchat.get_info("configdir"), "addons")
+```
+
+Scripts that use one or more other *modules*
+require those to be downloaded as well.
+Download every file in the module's directory,
+like you would download a script,
+and place them into the appropriate directory
+in your addons folder.
+
+**Make sure that the directory structure is preserved**
+and create directories when necessary.
+
 
 ## Modules
+
+Some of my scripts share utility functions 
+that I branched into their own modules
+for better code re-use.
 
 ### [pluginpref](./pluginpref/__init__.py)
 
 Abstractions for hexchat's `hexchat.*_pluginpref` API,
-wrapped in a MutableMapping.
+wrapped in a MutableMapping,
+so *the interface is essentially a `dict`*.
+
 All settings are prefixed with the plugin name internally
 to prevent collisions.
 Supports being wrapped with a JSON serializer,
-thus allowing to store lists and dictionaries too.
+thus allowing to store lists and dictionaries too,
+and can optionally version a settings schema for you.
 
-The interface is essentially a `dict`.
 For details, refer to docstring or tests (in same directory).
 
 ### [util](./util/__init__.py)
@@ -31,12 +68,15 @@ Refer to the source code and docstrings for details.
 ### [better_raw_modes.py](./better_raw_modes.py)
 
 Transforms raw mode messages
-to remove redundant information.
+to remove redundant information,
+i.e. the channel name.
 
 Requires `/set irc_raw_modes 1`.
 
 May cause incompatibilities with other scripts
 that rely on a certain Raw Modes format.
+
+Used modules: `util`
 
 
 ### [current_channel_replace.py](./current_channel_replace.py)
@@ -54,8 +94,7 @@ Mutes spammy +o, -o
 as well as join and part messages 
 if there are more than a certain number of users in a channel.
 
-Automatically requests the `twitch.tv/membership` and `twitch.tv/commands`
-capabilities from the network.
+Used modules: `util`
 
 
 ### [smart_filter.py](./smart_filter.py)
@@ -98,6 +137,8 @@ By default, it will only print the title for you locally.
 - `/ytt mute` manages a list of channels
   where YouTube urls should be ignored
 - `/ytt key` manages the stored key
+
+Used modules: `pluginpref`, `util`
 
 
 #### How to obtain a Google API key
