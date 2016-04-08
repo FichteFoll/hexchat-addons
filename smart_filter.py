@@ -23,7 +23,7 @@ import hexchat
 
 __module_name__ = 'SmartFilter'
 __module_author__ = 'FichteFoll'
-__module_version__ = '3.0.1'
+__module_version__ = '3.0.2'
 __module_description__ = 'Intelligently hide parts, joins, user modes, and nick changes'
 
 # TODO only hide +-qaohv in Raw Modes
@@ -69,6 +69,7 @@ class TimestampMap(object):
     def rename(self, old_nick, new_nick, server=None, channel=None):
         item = self.pop(old_nick, server=server, channel=channel)
         if item:
+            # Could overwrite existing new_nick entry, but should not matter in practice
             self._d[(server, channel, new_nick)] = item
 
     @expand_server_channel
@@ -146,13 +147,12 @@ def nick_cb(word, word_eol, userdata):
     source_nick = hexchat.strip(word[0])
     target_nick = hexchat.strip(word[1])
 
-    target_lasttalk = check_lasttalk(target_nick)
     tmap.rename(source_nick, target_nick)
     jmap.rename(source_nick, target_nick)
     if check_notify(source_nick) or check_notify(target_nick):
         return hexchat.EAT_NONE
 
-    return target_lasttalk or check_lasttalk(target_nick)
+    return check_lasttalk(target_nick)
 
 
 def mode_cb(word, word_eol, userdata):
@@ -207,7 +207,7 @@ if __name__ == '__main__':
     for event in ('Channel Operator', 'Channel Voice', 'Channel Half-Operator'):
         hexchat.hook_print(event, mode_cb)
     for event in ('Channel Action', 'Channel Action Hilight',
-                  'Channel Message', 'Channel Message Hilight'):
+                  'Channel Message', 'Channel Msg Hilight'):
         hexchat.hook_print_attrs(event, msg_cb, event)
     hexchat.hook_print('Raw Modes', raw_mode_cb)
     hexchat.hook_print_attrs('Join', join_cb)
