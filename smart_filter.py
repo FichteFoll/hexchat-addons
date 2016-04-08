@@ -17,13 +17,15 @@ using [buffextras.py][].
 [buffextras.py]: https://github.com/knitori/tools/blob/master/hexchat/buffextras.py
 """
 
+from __future__ import print_function, absolute_import
+
 import functools
 import time
 import hexchat
 
 __module_name__ = 'SmartFilter'
 __module_author__ = 'FichteFoll'
-__module_version__ = '3.0.2'
+__module_version__ = '3.1.0'
 __module_description__ = 'Intelligently hide parts, joins, user modes, and nick changes'
 
 # TODO only hide +-qaohv in Raw Modes
@@ -35,7 +37,8 @@ CLEAN_INTERVAL = 5 * 60  # in seconds
 def expand_server_channel(forward_context=False):
     def decorator(func, forward_context=False):
         @functools.wraps(func)
-        def wrapper(*args, context=hexchat, **kwargs):
+        def wrapper(*args, **kwargs):
+            context = kwargs.pop('context', hexchat)
             kwargs.setdefault('server', context.get_info('server'))
             kwargs.setdefault('channel', context.get_info('channel'))
             if forward_context:
@@ -51,7 +54,7 @@ def expand_server_channel(forward_context=False):
 class TimestampMap(object):
 
     def __init__(self, val=()):
-        super().__init__()
+        super(TimestampMap, self).__init__()
         self._d = dict(val)
 
     @expand_server_channel
@@ -89,7 +92,7 @@ class TimestampMap(object):
 class JoinMap(TimestampMap):
 
     def __init__(self, val=()):
-        super().__init__(val)
+        super(JoinMap, self).__init__(val)
         self.is_emitting = False
 
     @expand_server_channel
@@ -97,7 +100,7 @@ class JoinMap(TimestampMap):
         item = self.get(old_nick, server=server, channel=channel)
         if item:
             item[1][0] = new_nick
-        super().rename(old_nick, new_nick, server=server, channel=channel)
+        super(JoinMap, self).rename(old_nick, new_nick, server=server, channel=channel)
 
     @expand_server_channel(True)
     def pop_and_emit(self, nick, server=None, channel=None, context=hexchat):
