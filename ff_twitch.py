@@ -33,7 +33,7 @@ except SystemError:
 
 __module_name__ = "My Twitch Enhancements"
 __module_author__ = "FichteFoll"
-__module_version__ = "0.4.1"
+__module_version__ = "0.4.2"
 __module_description__ = "Enhancements for Twitch.tv"
 
 # TODO make configurable
@@ -89,7 +89,7 @@ def raw_modes_cb(word, word_eol, userdata):
 
 def caps_cb(word, word_eol, userdata):
     # Hexchat 2.12.0 automatically requests the membership CAP
-    hc_version = [int(x) for x in hexchat.get_info('version').split(".")]
+    hc_version = tuple(int(x) for x in hexchat.get_info('version').split("."))
     if hc_version > (2, 12):
         return hexchat.EAT_NONE
 
