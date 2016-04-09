@@ -23,10 +23,10 @@ import functools
 import time
 import hexchat
 
-__module_name__ = 'SmartFilter'
-__module_author__ = 'FichteFoll'
-__module_version__ = '3.1.0'
-__module_description__ = 'Intelligently hide parts, joins, user modes, and nick changes'
+__module_name__ = "SmartFilter"
+__module_author__ = "FichteFoll"
+__module_version__ = "3.1.0"
+__module_description__ = "Intelligently hide parts, joins, user modes, and nick changes"
 
 # TODO only hide +-qaohv in Raw Modes
 
