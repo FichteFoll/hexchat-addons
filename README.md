@@ -85,8 +85,6 @@ Expands a preceding `#` character to the current channel
 when you press space or tab after it.
 Hold shift key to insert literal space.
 
-Note: Only works if at the end of input.
-
 
 ### [ff_twitch.py](./ff_twitch.py)
 
