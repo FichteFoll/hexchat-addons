@@ -95,6 +95,16 @@ if there are more than a certain number of users in a channel.
 Used modules: `util`
 
 
+### [mpv_np_windows.py](./mpv_np_windows.py)
+
+Searches for an open mpv instance 
+and announces the currently loaded file.
+
+Only works on Windows.
+If you change the title formatting,
+adjust the regular expression in the script.
+
+
 ### [smart_filter.py](./smart_filter.py)
 
 Based on [smartparts.py][].
