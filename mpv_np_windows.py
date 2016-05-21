@@ -23,6 +23,7 @@ EnumWindows.restype = cw.BOOL
 
 # https://msdn.microsoft.com/en-us/library/windows/desktop/ms633520%28v=vs.85%29.aspx
 GetWindowText = user32.GetWindowTextW
+# for some reason, cw.LPSTR causes errors here for *some* (!) windows
 # GetWindowText.argtypes = (cw.HWND, cw.LPSTR, c.c_int)
 GetWindowText.restype = c.c_int
 
