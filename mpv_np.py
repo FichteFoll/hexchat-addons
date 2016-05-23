@@ -10,7 +10,7 @@ import hexchat
 
 
 __module_name__ = "mpv now playing"
-__module_version__ = "0.4.0"
+__module_version__ = "0.4.1"
 __module_description__ = "Announces info of the currently loaded 'file' in mpv"
 
 # # Configuration # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -181,7 +181,6 @@ class WinMpvIpcClient(MpvIpcClient):
                     # wait until there is a newline in out tmpfile (which powershell writes).
                     # This means we can't support newlines in the fmt string,
                     # but who needs those anyway?
-                    print(tmpfile, "opened")
                     buffer = ''
                     while time.time() < end_time:
                         result = f.read()
@@ -189,8 +188,6 @@ class WinMpvIpcClient(MpvIpcClient):
                         if "\n" in result:
                             # strip BOM and next line
                             buffer = buffer.lstrip("\ufeff").splitlines()[0]
-                            print("buffer", repr(buffer))
-                            print(time.time() - start_time)
                             return buffer
                         buffer += result
             except OSError:
