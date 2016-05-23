@@ -97,13 +97,22 @@ Used modules: `util`
 
 ### [mpv_np.py](./mpv_np.py)
 
-Communicates with mpv via its IPC protocol
-and announces the currently loaded file.
+Executes a hexchat command 
+subject to mpv's [property expansion][]
+by using its IPC protocol.
+This can be used to announces the currently loaded file.
 Requires setting `input-ipc-server`
 in mpv's config file
 (refer to `/help mpv`).
 
-UNIX systems are supported but untested.
+UNIX systems are supported but untested
+(and only support the legacy method as of now).
+
+```
+[00:32:07] * FichteFoll is playing NOMA - Brain Power [00:01:04 / 00:06:08]
+```
+
+[property expansion]: https://mpv.io/manual/stable/#property-expansion
 
 
 ### [smart_filter.py](./smart_filter.py)
