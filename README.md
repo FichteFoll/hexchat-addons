@@ -95,14 +95,15 @@ if there are more than a certain number of users in a channel.
 Used modules: `util`
 
 
-### [mpv_np_windows.py](./mpv_np_windows.py)
+### [mpv_np.py](./mpv_np.py)
 
-Searches for an open mpv instance 
+Communicates with mpv via its IPC protocol
 and announces the currently loaded file.
+Requires setting `input-ipc-server`
+in mpv's config file
+(refer to `/help mpv`).
 
-Only works on Windows.
-If you change the title formatting,
-adjust the regular expression in the script.
+UNIX systems are supported but untested.
 
 
 ### [smart_filter.py](./smart_filter.py)
