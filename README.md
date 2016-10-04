@@ -1,13 +1,16 @@
-FichteFoll's Hexchat addons
+FichteFoll's Hexchat Addons
 ===========================
 
 This is just a compilation of modules and addons for hexchat,
 using its Python plugin.
 
 All scripts are tested 
-to work on **Hexchat 2.12.0**
+to work on **Hexchat 2.12.1**
 with **Python 3.5** as plugin engine
 (and Windows 7 as OS).
+Lua scripts require the Lua plugin engine to be installed
+(available since Hexchat 2.12).
+
 
 ## Installation
 
@@ -22,7 +25,7 @@ The following Hexchat command
 will print the path to your addons folder:
 
 ```
-/py exec import os; os.path.join(hexchat.get_info("configdir"), "addons")
+/py exec import os; print(os.path.join(hexchat.get_info("configdir"), "addons"))
 ```
 
 Scripts that use one or more other *modules*
