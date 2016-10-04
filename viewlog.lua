@@ -3,11 +3,10 @@ local lgi = require('lgi')
 local Gio = lgi.require('Gio')
 
 
-hexchat.register('viewlog', '1.0.0', "Open log file for the current context")
+hexchat.register('viewlog', '1.0.1', "Open log file for the current context")
 
 
-local DEFAULT_PROGRAM = "notepad.exe"
--- local DIR_SEP = string_split(package.config)[1]
+local DEFAULT_PROGRAM = "notepad"
 local DIR_SEP = ffi.os == 'Windows' and "\\" or "/"
 
 
