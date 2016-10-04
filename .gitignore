@@ -5,6 +5,8 @@
 
 # temporary scripts
 _*/
+*.pyw
+*.lua_
 
 # external scripts
 buffextras.py
@@ -14,4 +16,9 @@ mymsg.py
 script.py
 twitch.py
 undoclose.py
+requiresasl.lua
 requiresasl.py
+greentext.py
+mymsg.lua
+pmcolor.lua
+undo.lua
