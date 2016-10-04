@@ -142,6 +142,27 @@ Also works with Python 2.7.
 [buffextras.py]: https://github.com/knitori/tools/blob/master/hexchat/buffextras.py
 
 
+### [viewlog.lua](./viewlog.lua)
+
+Improved Lua port of the [Perl script][].
+Adds the `/viewlog` command,
+which opens the log file
+of the currently active context.
+
+The default program to be launched is `"notepad"`
+and can be set in the source file.
+Additionally, 
+a path to a different program
+can be provided as the first and following arguments.
+
+On Windows,
+this will open a cmd window
+for the duration of the process being active.
+Untested on UNIX.
+
+[Perl script]: https://github.com/Farow/hexchat-scripts/blob/master/viewlog.pl
+
+
 ### [youtube_title.py](./youtube_title.py)
 
 Print (or announce) a YouTube video's title.
