@@ -170,7 +170,8 @@ Untested on UNIX.
 
 Print (or announce) a YouTube video's title.
 
-[**Requires a Google API key!**](#how-to-obtain-a-google-api-key)
+**Requires a Google API key!**
+See below on how to obtain one](#how-to-obtain-a-google-api-key).
 Set it using `/ytt key set <key>`.
 
 By default, it will only print the title for you locally.
