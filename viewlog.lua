@@ -4,11 +4,30 @@ local Gio = lgi.require('Gio')
 local GLib = lgi.require('GLib')
 
 
-hexchat.register('viewlog', '1.0.2', "Open log file for the current context")
+hexchat.register("viewlog", "1.1.0", "Open log file for the current context")
 
 
-local DEFAULT_PROGRAM = "notepad"
-local DIR_SEP = ffi.os == 'Windows' and "\\" or "/"
+--[=[
+    We would like to use Gio.AppInfo.get_recommended_for_type("text/plain"),
+    but it doesn't work (on Windows).
+    Gio.AppInfo.launch_default_for_uri also launches notepad on Windows, so no help.
+
+    Instead, we require the user
+    to provide a program (and arguments).
+    The first `nil` occurance
+    will be replaced with the logfile path.
+
+    Note that on Windows,
+    "notepad.exe" can not handle LF line breaks,
+    which Hexchats writes in recent versions.
+
+    Example:
+        local DEFAULT_PROGRAM = {[[e:\Program Files\Sublime Text 3\sublime_text.exe]]}
+]=]
+local DEFAULT_PROGRAM = {} -- MODIFY THIS --
+
+
+---------------------------------------------------------------------------------------------------
 
 
 -- util.c:rfc_strlower -> -- util.h:rfc_tolower -> util.c:rfc_tolowertab
@@ -71,36 +90,46 @@ local function log_create_pathname(ctx)
 end
 
 
-function open_file(file, program)
-    local cmd = ('"%s" "%s"'):format(program, file:get_path())
-    if ffi.os == "Windows" then
-        -- Windows requires the entire thing to be wrapped in quotes,
-        -- for some reason
-        cmd = ('"%s"'):format(cmd)
-    end
-
-    -- print("launching " .. cmd)
-    io.popen(cmd)
-    -- local result = os.execute(cmd)
-    -- if result ~= 0 then
-    --     hexchat.command(('GUI MSGBOX "Unable to launch program. Exit code: %d"')
-    --                     :format(result))
-    -- end
+function subprocess(cmd)
+    local launcher = Gio.SubprocessLauncher.new(0) -- Gio.SubprocessFlags.STDOUT_SILENCE
+    return launcher:spawnv(cmd)
 end
 
 
 local function viewlog_cb(word, word_eol)
-    local program = #word > 1 and word_eol[2] or DEFAULT_PROGRAM
-
-    local logfile = log_create_pathname(hexchat.get_context())
-    if not logfile then
+    local program
+    if #word > 1 then
+        program = {word_eol[2]} -- TODO what about arguments?
+    else
+        program = DEFAULT_PROGRAM
+    end
+    if not type(program) == 'table' or #program == 0 then
+        hexchat.command('GUI MSGBOX "You need to specify a program to launch in the source code."')
         return hexchat.EAT_ALL
     end
 
+    local logfile = log_create_pathname(hexchat.get_context())
+    if logfile == nil then
+        return hexchat.EAT_ALL
+    end
+
+    -- Build cmd and replace first 'nil' in program.
+    -- This will end up appending if there is no nil in the middle.
+    local cmd = program
+    for i = 1, #program + 1 do
+        if cmd[i] == nil then
+            cmd[i] = logfile:get_path()
+            break
+        end
+    end
+
     if logfile:query_exists() then
-        open_file(logfile, program)
+        if subprocess(cmd) == nil then
+            hexchat.command('GUI MSGBOX "Unable to launch program."')
+        end
     else
-        hexchat.command(('GUI MSGBOX "Log file for the current channel/dialog does not seem to exist.\n\n""%s""')
+        hexchat.command(('GUI MSGBOX "Log file for the current channel/dialog does not seem to '
+                         .. 'exist.\n\n""%s""')
                         :format(logfile:get_path()))
     end
 
@@ -109,4 +138,6 @@ end
 
 
 hexchat.hook_command("viewlog", viewlog_cb,
-                     "Usage: /viewlog [program] - Open log file of the current context in 'program' (path to executable)")
+                     "Usage: /viewlog [program] - Open log file of the current context in "
+                     .. "'program' (path to executable). \n"
+                     .. "You should set a program (and arguments) in the script's source code.")
