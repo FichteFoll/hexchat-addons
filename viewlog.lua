@@ -1,9 +1,10 @@
 local ffi = require('ffi')
 local lgi = require('lgi')
 local Gio = lgi.require('Gio')
+local GLib = lgi.require('GLib')
 
 
-hexchat.register('viewlog', '1.0.1', "Open log file for the current context")
+hexchat.register('viewlog', '1.0.2', "Open log file for the current context")
 
 
 local DEFAULT_PROGRAM = "notepad"
@@ -60,10 +61,13 @@ local function log_create_pathname(ctx)
     fname = fname:gsub("\001n", (network:gsub("%%", "%%%%")))
     fname = fname:gsub("\001s", (server:gsub("%%", "%%%%")))
     fname = fname:gsub("\001c", (channel:gsub("%%", "%%%%")))
-    -- print("fname: " .. fname)
 
-    local base_path = hexchat.get_info('configdir') .. DIR_SEP .. "logs"
-    return Gio.File.new_for_commandline_arg_and_cwd(fname, base_path)
+    -- Calling GLib.filename_from_utf8 crashes on Windows
+    -- (https://github.com/hexchat/hexchat/issues/1824)
+    -- local config_dir = GLib.filename_from_utf8(hexchat.get_info('configdir'), -1)
+    -- local log_path = GLib.build_filenamev({config_dir, GLib.filename_from_utf8("logs", -1)})
+    local log_path = GLib.build_filenamev({hexchat.get_info('configdir'), "logs"})
+    return Gio.File.new_for_commandline_arg_and_cwd(fname, log_path)
 end
 
 
