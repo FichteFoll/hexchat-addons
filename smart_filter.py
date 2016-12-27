@@ -264,14 +264,18 @@ def part_cb(word, word_eol, userdata):
 
     return check_lasttalk(word[0])
 
+
 if __name__ == '__main__':
     for event in ('Quit', 'Part', 'Part with Reason'):
         hexchat.hook_print(event, part_cb)
+
     for event in ('Channel Operator', 'Channel Voice', 'Channel Half-Operator'):
         hexchat.hook_print(event, mode_cb)
+
     for event in ('Channel Action', 'Channel Action Hilight',
                   'Channel Message', 'Channel Msg Hilight'):
         hexchat.hook_print_attrs(event, msg_cb, event)
+
     hexchat.hook_print('Raw Modes', raw_mode_cb)
     hexchat.hook_print_attrs('Join', join_cb)
     hexchat.hook_print('Change Nick', nick_cb)
