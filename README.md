@@ -126,7 +126,8 @@ Mutes a variety of events for users that never talk,
 or haven't talked in a certain period
 (60 minutes by default).
 
-- Muted events are: Joins, Parts, Renames and Mode Changes.
+- Muted events are:
+  joins, parts, renames and mode changes.
 - If a recently joined user starts talking,
   his 'Join' event is late-emitted with the original timestamp.
 - Handles renames.
@@ -134,12 +135,14 @@ or haven't talked in a certain period
   parts and joins again (or renames),
   the events are shown.
 - Events for nicks in your notify list are always shown.
+- Mode changes that affect the channel are always shown.
 
 Works with ZNC bouncers 
-and also works with \*buffextras module 
+and also with \*buffextras module 
 using [buffextras.py][].
 
 Also works with Python 2.7.
+Requires Hexchat 2.12.2.
 
 [smartparts.py]: https://github.com/TingPing/plugins/blob/master/HexChat/smartparts.py
 [buffextras.py]: https://github.com/knitori/tools/blob/master/hexchat/buffextras.py

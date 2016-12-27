@@ -20,15 +20,15 @@ using [buffextras.py][].
 from __future__ import print_function, absolute_import
 
 import functools
+from itertools import zip_longest
 import time
+
 import hexchat
 
 __module_name__ = "SmartFilter"
 __module_author__ = "FichteFoll"
-__module_version__ = "3.1.0"
+__module_version__ = "3.2.0"
 __module_description__ = "Intelligently hide parts, joins, user modes, and nick changes"
-
-# TODO only hide +-qaohv in Raw Modes
 
 LASTTALK_THRESHOLD = 1 * 60 * 60  # in seconds
 CLEAN_INTERVAL = 5 * 60  # in seconds
@@ -125,6 +125,28 @@ def check_notify(nick):
     return get_user(nick, 'notify') is not None
 
 
+def get_channel_list(context=None):
+    if context is None:
+        context = hexchat.get_context()
+
+    for item in context.get_list('channels'):
+        if item.context == context:
+            return item
+
+    return None
+
+
+def split_irc_message(message):
+    if message.startswith(":"):
+        return [message]
+    first, _, last = message.partition(" :")
+    args = list(filter(None, first.split(" ")))
+    if last:
+        args.append(last)
+    return args
+    # return [*filter(None, first.split(" ")), last]
+
+
 def check_lasttalk(nick):
     item = tmap.get(nick)
     if item is None:
@@ -165,14 +187,52 @@ def mode_cb(word, word_eol, userdata):
 
 
 def raw_mode_cb(word, word_eol, userdata):
-    source_nick = hexchat.strip(word[0])
-    # do some rough nick extraction
-    target_nicks = [x for x in word[1].split() if not x.startswith(('+', '-', '#'))]
-    for nick in target_nicks:
-        if check_mode(source_nick, nick) == hexchat.EAT_NONE:
-            return hexchat.EAT_NONE
-    else:
+    source_nick, args = word
+    if check_you(source_nick):
+        return hexchat.EAT_NONE
+
+    target, *mode_args = split_irc_message(args)
+    if target != hexchat.get_info('channel'):
+        return hexchat.EAT_NONE
+
+    list_ = get_channel_list()
+    if not list_:
+        return hexchat.EAT_NONE
+
+    # Parse the raw mode message and eat it
+    # if it only affects nicks we don't care about
+    # (and not the channel).
+    nickmodes = list_.nickmodes
+    # assure we have 4 entries
+    chanmodes = [x for x, _ in zip_longest(list_.chanmodes.split(','), range(4), fillvalue="")]
+
+    eat = True
+    mode_iter = iter(mode_args)
+    for param in mode_iter:
+        action, *mode_chars = param
+        assert action in "+-"
+        for char in mode_chars:
+            if char in nickmodes:  # qaohv; expects nick
+                nick = next(mode_iter)
+                eat &= not check_you(nick)
+                eat &= not check_notify(nick)
+                eat &= check_lasttalk(nick) is not hexchat.EAT_NONE
+                continue
+            elif char in chanmodes[0]:  # beI; expects hostmask
+                next(mode_iter)
+            elif char in chanmodes[1]:  # k; expects "key"
+                next(mode_iter)
+            elif char in chanmodes[2]:  # l; expects number but only if +
+                if action == '+':
+                    next(mode_iter)
+            elif char not in chanmodes[3]:
+                print("Unexpected mode_char '{}' in '{}'".format(char, param))
+            eat = False  # mode change affects channel
+
+    if eat:
         return hexchat.EAT_HEXCHAT
+    else:
+        return hexchat.EAT_NONE
 
 
 def msg_cb(word, word_eol, event, attrs):
