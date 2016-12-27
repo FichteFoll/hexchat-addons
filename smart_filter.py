@@ -27,7 +27,7 @@ import hexchat
 
 __module_name__ = "SmartFilter"
 __module_author__ = "FichteFoll"
-__module_version__ = "3.2.0"
+__module_version__ = "3.2.1"
 __module_description__ = "Intelligently hide parts, joins, user modes, and nick changes"
 
 LASTTALK_THRESHOLD = 1 * 60 * 60  # in seconds
@@ -229,7 +229,9 @@ def raw_mode_cb(word, word_eol, userdata):
             eat = False  # mode change affects channel
 
     if eat:
-        return hexchat.EAT_HEXCHAT
+        # Eat for all, so this plays better with better_raw_modes.py.
+        # To compromise, register this callback with a lower-than-normal priority.
+        return hexchat.EAT_ALL
     else:
         return hexchat.EAT_NONE
 
@@ -275,7 +277,7 @@ if __name__ == '__main__':
                   'Channel Message', 'Channel Msg Hilight'):
         hexchat.hook_print_attrs(event, msg_cb, event)
 
-    hexchat.hook_print('Raw Modes', raw_mode_cb)
+    hexchat.hook_print('Raw Modes', raw_mode_cb, priority=hexchat.PRI_LOW)
     hexchat.hook_print_attrs('Join', join_cb)
     hexchat.hook_print('Change Nick', nick_cb)
 
