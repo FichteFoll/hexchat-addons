@@ -121,14 +121,14 @@ def event_text_to_format_string(text):
     See print_event for example usage.
     """
     cmap = {
-        'C', '\003'
-        'O', '\017',
-        'H', '\010',
-        'R', '\026',
-        'B', '\002',
-        'I', '\035',
-        'U', '\037',
-        '%', '%',
+        'C': '\003',
+        'O': '\017',
+        'H': '\010',
+        'R': '\026',
+        'B': '\002',
+        'I': '\035',
+        'U': '\037',
+        '%': '%',
     }
 
     def percent(match):
@@ -145,7 +145,7 @@ def event_text_to_format_string(text):
         elif c[0] == 'a':
             return chr(int(c[1:]))
         else:
-            return "{%d}" % c  # formatting group
+            return "{%d}" % (int(c) - 1)  # formatting group
         return match.group(0)
 
     text = text.replace("{", "{{").replace("}", "}}")  # escape formatting braces
@@ -159,5 +159,6 @@ def print_event(event_name, *word, context=hexchat):
 
     A context may be specified using the `context` keyword argument.
     """
+    # TODO doesn't handle `&n`, where n is a number
     fmt = event_text_to_format_string(context.get_info("event_text %s" % event_name))
     context.prnt(fmt.format(*word))
