@@ -70,14 +70,10 @@ Refer to the source code and docstrings for details.
 
 ### [better_raw_modes.py](./better_raw_modes.py)
 
-Transforms raw mode messages
-to remove redundant information,
-i.e. the channel name.
+Strips the channel name for channel mode messages
+and your nick name for user mode messages.
 
 Requires `/set irc_raw_modes 1`.
-
-May cause incompatibilities with other scripts
-that rely on a certain Raw Modes format.
 
 Used modules: `util`
 
@@ -141,8 +137,8 @@ Works with ZNC bouncers
 and also with \*buffextras module 
 using [buffextras.py][].
 
-Also works with Python 2.7.
 Requires Hexchat 2.12.2.
+Also works with Python 2.7.
 
 [smartparts.py]: https://github.com/TingPing/plugins/blob/master/HexChat/smartparts.py
 [buffextras.py]: https://github.com/knitori/tools/blob/master/hexchat/buffextras.py
