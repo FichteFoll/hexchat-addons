@@ -53,7 +53,7 @@ def raw_modes_cb(word, word_eol, event):
         return hexchat.EAT_NONE
 
     print_event('Raw Modes', word[0], " ".join(mode_args))
-    return hexchat.EAT_ALL
+    return hexchat.EAT_HEXCHAT
 
 
 def main():
