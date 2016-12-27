@@ -1,7 +1,7 @@
-"""Transforms raw mode messages to remove redundant information.
+"""Remove redundant target information if it's obvious from context.
 
 FichteFoll sets mode #channel +o FichteFoll => FichteFoll sets mode +o FichteFoll
-FichteFoll sets mode FichteFoll +i => FichteFoll sets mode :+i
+FichteFoll sets mode FichteFoll +ix => FichteFoll sets mode +ix
 
 Requires the irc_raw_modes setting to be enabled
 (`/set irc_raw_modes 1`).
@@ -43,11 +43,7 @@ def split_irc_message(message):
 
 
 def raw_modes_cb(word, word_eol, event):
-    """
-    ['FichteFoll', '#channel +o FichteFoll'] => ['FichteFoll', '+o FichteFoll']
-    ['FichteFoll', 'FichteFoll :+Tix'] => ['FichteFoll', ':+Tix']
-    ['FichteFoll', 'FichteFoll +Tix'] => ['FichteFoll', ':+Tix']
-    """
+    """Eat the target part of the message, if it's obvious from context."""
     target, *mode_args = split_irc_message(word[1])
     if target not in (hexchat.get_info('channel'), hexchat.get_info('nick')):
         return hexchat.EAT_NONE
