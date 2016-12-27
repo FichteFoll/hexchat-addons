@@ -144,7 +144,6 @@ def split_irc_message(message):
     if last:
         args.append(last)
     return args
-    # return [*filter(None, first.split(" ")), last]
 
 
 def check_lasttalk(nick):
