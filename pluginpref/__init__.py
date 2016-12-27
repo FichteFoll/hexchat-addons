@@ -165,7 +165,7 @@ class PluginPref(MutableMapping):
         """
         version_str = hexchat.get_pluginpref(self.version_pref_name)
         if not version_str:
-            return
+            return None
         version_split = version_str.split('.')
         try:
             if len(version_split) == 1:
