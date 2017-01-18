@@ -6,29 +6,24 @@ FichteFoll sets mode FichteFoll +ix => FichteFoll sets mode +ix
 Requires the irc_raw_modes setting to be enabled
 (`/set irc_raw_modes 1`).
 """
+import os
+import sys
+
 import hexchat
 
-try:
-    from .util import print_event
-except SystemError:
-    # Add addons path to sys.path for win32
-    # See https://github.com/hexchat/hexchat/issues/1396
-    import os
-    import sys
+# Make imports work (see https://github.com/hexchat/hexchat/issues/1396)
+addons_path = os.path.join(hexchat.get_info("configdir"), "addons")
+if addons_path not in sys.path:
+    sys.path.append(addons_path)
 
-    if sys.platform == "win32":
-        addons_path = os.path.join(hexchat.get_info("configdir"), "addons")
-        if addons_path not in sys.path:
-            sys.path.append(addons_path)
-
-    from util import print_event
+from util import print_event
 
 
 ###############################################################################
 
 __module_name__ = "Better Raw Modes"
 __module_author__ = "FichteFoll"
-__module_version__ = "0.3.0"
+__module_version__ = "0.3.1"
 __module_description__ = "Improves display of the 'Raw Modes' text event"
 
 
