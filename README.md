@@ -4,10 +4,18 @@ FichteFoll's Hexchat Addons
 This is just a compilation of modules and addons for hexchat,
 using its Python plugin.
 
-All scripts are tested 
-to work on **Hexchat 2.12.1**
-with **Python 3.5** as plugin engine
-(and Windows 7 as OS).
+Unless further noted,
+all scripts are tested 
+to work on
+
+- **Windows 7**
+  with **Hexchat 2.12.1** or higher,
+  **Python 3.5**
+- **Arch Linux** 
+  with Hexchat 2.12.4, 
+  Python 3.6, 
+  Lua 5.3
+
 Lua scripts require the Lua plugin engine to be installed
 (available since Hexchat 2.12).
 
@@ -104,11 +112,10 @@ Requires setting `input-ipc-server`
 in mpv's config file
 (refer to `/help mpv`).
 
-UNIX systems are supported but untested
-(and only support the legacy method as of now).
+UNIX systems only support the legacy method as of now.
 
 ```
-[00:32:07] * FichteFoll is playing NOMA - Brain Power [00:01:04 / 00:06:08]
+[00:32:07] * FichteFoll is playing: NOMA - Brain Power [00:01:04 / 00:06:08]
 ```
 
 [property expansion]: https://mpv.io/manual/stable/#property-expansion
@@ -155,6 +162,9 @@ A default program for the log file
 **must** be configured in the source code.
 See the comments there for details.
 
+On UNIX,
+requires `lua-lgi` to be installed.
+
 [Perl script]: https://github.com/Farow/hexchat-scripts/blob/master/viewlog.pl
 
 
@@ -176,6 +186,8 @@ By default, it will only print the title for you locally.
 - `/ytt key` manages the stored key
 
 Used modules: `pluginpref`, `util`
+
+Requires the `requests` Python package to be installed.
 
 
 #### How to obtain a Google API key
