@@ -25,12 +25,12 @@ UNIX_PIPE_PATH = "/tmp/mpv-socket"  # variables are expanded
 # The command that is being executed.
 # Supports mpv's property expansion:
 # https://mpv.io/manual/stable/#property-expansion
-CMD_FMT = R'me is playing \x02${media-title}\x02 [${time-pos}${!duration==0: / ${duration}}]'
+CMD_FMT = R'me is playing: ${media-title} [${time-pos}${!duration==0: / ${duration}}]'
 
 # On UNIX, the above is not supported yet
 # and this Python format string is used instead.
 # `{title}` will be replaced with the title.
-LEGACY_CMD_FMT = "me is playing \x02{title}\x02"
+LEGACY_CMD_FMT = "me is playing: {title}"
 
 
 # # The Script # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
