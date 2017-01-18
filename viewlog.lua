@@ -1,10 +1,9 @@
-local ffi = require('ffi')
 local lgi = require('lgi')
 local Gio = lgi.require('Gio')
 local GLib = lgi.require('GLib')
 
 
-hexchat.register("viewlog", "1.1.0", "Open log file for the current context")
+hexchat.register("viewlog", "1.2.0", "Open log file for the current context")
 
 
 --[=[
@@ -24,10 +23,14 @@ hexchat.register("viewlog", "1.1.0", "Open log file for the current context")
     Example:
         local DEFAULT_PROGRAM = {[[e:\Program Files\Sublime Text 3\sublime_text.exe]]}
 ]=]
-local DEFAULT_PROGRAM = {} -- MODIFY THIS --
+local DEFAULT_PROGRAM = {"subl"} -- MODIFY THIS --
 
 
 ---------------------------------------------------------------------------------------------------
+
+-- Relies on window pointer implementation to determine whether we're on Windows or not
+-- (instead of using ffi.os, which is not available in vanilla lua).
+local is_windows = hexchat.get_info('win_ptr') ~= hexchat.get_info('gtkwin_ptr')
 
 
 -- util.c:rfc_strlower -> -- util.h:rfc_tolower -> util.c:rfc_tolowertab
@@ -36,7 +39,7 @@ local function rfc_strlower(str)
     -- almost according to rfc2812,
     -- except for ^ -> ~ (should be ~ -> ^)
     -- https://tools.ietf.org/html/rfc2812
-    str = str:gsub("[A-Z%[%]\\^]", function (letter)
+    return str:gsub("[A-Z%[%]\\^]", function (letter)
         return string.char(letter:byte() + 0x20)
     end)
 end
@@ -46,7 +49,7 @@ end
 local function log_create_filename(channame)
     if not channame then
         return channame
-    elseif ffi.os == 'Windows' then
+    elseif is_windows then
         return channame:gsub('[\\|/><:"*?]', "_")
     else
         return rfc_strlower(channame)
