@@ -10,7 +10,7 @@ import hexchat
 
 
 __module_name__ = "mpv now playing"
-__module_version__ = "0.4.1"
+__module_version__ = "0.4.2"
 __module_description__ = "Announces info of the currently loaded 'file' in mpv"
 
 # # Configuration # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -19,7 +19,7 @@ __module_description__ = "Announces info of the currently loaded 'file' in mpv"
 # Set the same path in your mpv.conf `input-ipc-server` setting
 # or adjust these values.
 WIN_PIPE_PATH = R"\\.\pipe\mpvsocket"
-UNIX_PIPE_PATH = "/tmp/mpvsocket"  # variables are expanded
+UNIX_PIPE_PATH = "/tmp/mpv-socket"  # variables are expanded
 
 # Windows only:
 # The command that is being executed.
@@ -165,7 +165,7 @@ class WinMpvIpcClient(MpvIpcClient):
 
         tmpfile = _tempfile_path()
 
-        # backshlashes in quotes need to be escaped for mpv
+        # backslashes in quotes need to be escaped for mpv
         self.input_command(R'''run powershell.exe -Command "'{fmt}' | Out-File '{tmpfile}'"'''
                            .format(fmt=fmt, tmpfile=tmpfile.replace("\\", "\\\\")))
 
@@ -194,11 +194,13 @@ class WinMpvIpcClient(MpvIpcClient):
                 continue
             else:
                 break
+            finally:
+                os.remove(tmpfile)
 
 
 class UnixMpvIpcClient(MpvIpcClient):
 
-    buffer = ""
+    buffer = b""
 
     def _connect(self):
         self._sock = socket.socket(socket.AF_UNIX)
@@ -213,7 +215,7 @@ class UnixMpvIpcClient(MpvIpcClient):
         while 1:
             if b"\n" in self.buffer:
                 line, _, self.buffer = self.buffer.partition(b"\n")
-                return line.encode('utf-8')
+                return line.decode('utf-8')
             self.buffer += self._sock.recv(4096)
 
     def close(self):
