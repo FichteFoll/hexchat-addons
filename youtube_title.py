@@ -2,34 +2,27 @@
 """
 
 import re
-
-import requests
+import os
+import sys
 
 import hexchat
 
-try:
-    from .pluginpref import PluginPref, JSONPluginPref
-    from .util import set_timeout
-except SystemError:
-    # Add addons path to sys.path for win32
-    # See https://github.com/hexchat/hexchat/issues/1396
-    import os
-    import sys
+import requests
 
-    if sys.platform == "win32":
-        addons_path = os.path.join(hexchat.get_info("configdir"), "addons")
-        if addons_path not in sys.path:
-            sys.path.append(addons_path)
+# Make imports work (see https://github.com/hexchat/hexchat/issues/1396)
+addons_path = os.path.join(hexchat.get_info("configdir"), "addons")
+if addons_path not in sys.path:
+    sys.path.append(addons_path)
 
-    from pluginpref import PluginPref, JSONPluginPref
-    from util import set_timeout
+from pluginpref import PluginPref, JSONPluginPref
+from util import set_timeout
 
 
 ###############################################################################
 
 
 __module_name__        = "YouTube Title"
-__module_version__     = "0.3.2"
+__module_version__     = "0.3.3"
 __module_description__ = "Scans text for YouTube video urls and displays or announces the titles"
 __module_author__      = "FichteFoll <fichtefoll2@googlemail.com>"
 
