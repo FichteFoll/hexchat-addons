@@ -14,7 +14,7 @@ import json
 import hexchat
 
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 versioninfo = tuple(map(int, __version__.split(".")))
 __author__ = "FichteFoll <fichtefoll2@googlemail.com>"
 
@@ -97,7 +97,12 @@ class PluginPref(MutableMapping):
             raise TypeError("name or prefix must be provided")
         self.prefix = prefix or name.strip().replace(" ", "_").lower().lstrip("_")
         self.prefix_sep = prefix_sep
-        self.version_pref_name = "_version.%s" % self.prefix
+        self._version_pref_name = "_version.%s" % self.prefix
+
+    def __eq__(self, other):
+        if not isinstance(other, PluginPref):
+            return NotImplemented
+        return (self.prefix, self.prefix_sep) == (other.prefix, other.prefix_sep)
 
     def _keyname(self, key=""):
         return self.prefix + self.prefix_sep + key
@@ -152,7 +157,7 @@ class PluginPref(MutableMapping):
         if not isinstance(key, str):
             raise TypeError("Key must be a string")
         if not hexchat.del_pluginpref(self._keyname(key)):
-            raise RuntimeError("Could not delete %s" + key)
+            raise RuntimeError("Could not delete %s" % key)
 
     def get_version(self):
         """Retrieve the currently stored preferences' version.
@@ -163,7 +168,7 @@ class PluginPref(MutableMapping):
 
         Set the version with `set_version`.
         """
-        version_str = hexchat.get_pluginpref(self.version_pref_name)
+        version_str = hexchat.get_pluginpref(self._version_pref_name)
         if not version_str:
             return None
         version_split = version_str.split('.')
@@ -191,7 +196,7 @@ class PluginPref(MutableMapping):
         else:
             raise TypeError("version must be an integer or a tuple of integers")
 
-        return hexchat.set_pluginpref(self.version_pref_name, version_str)
+        return hexchat.set_pluginpref(self._version_pref_name, version_str)
 
     version = property(
         get_version,
@@ -265,5 +270,5 @@ class JSONPluginPref(SerializablePluginPref):
         # here.
         if isinstance(obj, int):
             obj = str(obj)
-        obj = super().serialize(obj)
+        obj = super().deserialize(obj)
         return json.loads(obj)
