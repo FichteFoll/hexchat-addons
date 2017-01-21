@@ -14,7 +14,7 @@ import json
 import hexchat
 
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 versioninfo = tuple(map(int, __version__.split(".")))
 __author__ = "FichteFoll <fichtefoll2@googlemail.com>"
 
@@ -170,6 +170,13 @@ class PluginPref(MutableMapping):
         """
         version_str = hexchat.get_pluginpref(self._version_pref_name)
         if not version_str:
+            return None
+        elif version_str == 0:  # yes, that's a number
+            # `0` was implicitly set by hexchat
+            # with earlier versions of this code.
+            # Since we have no idea what it should have been,
+            # just say that there is no version at all.
+            # See also `set_version` below.
             return None
         elif not version_str.startswith("v"):
             raise ValueError("Unexpected version value: %s" % version_str)
