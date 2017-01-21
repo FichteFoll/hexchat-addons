@@ -203,7 +203,6 @@ class PluginPref(MutableMapping):
         # and converting a string like "0.3.0" into just "0"
         # by explcitly starting with a non-numeric character.
         version_str = "v" + version_str
-        print("setting version", self._version_pref_name, version_str)
         if not hexchat.set_pluginpref(self._version_pref_name, version_str):
             raise RuntimeError("Could not set version")
 
