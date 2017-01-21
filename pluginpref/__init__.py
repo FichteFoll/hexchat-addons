@@ -14,7 +14,7 @@ import json
 import hexchat
 
 
-__version__ = "0.3.2"
+__version__ = "0.4.0"
 versioninfo = tuple(map(int, __version__.split(".")))
 __author__ = "FichteFoll <fichtefoll2@googlemail.com>"
 
@@ -171,7 +171,10 @@ class PluginPref(MutableMapping):
         version_str = hexchat.get_pluginpref(self._version_pref_name)
         if not version_str:
             return None
-        version_split = version_str.split('.')
+        elif not version_str.startswith("v"):
+            raise ValueError("Unexpected version value: %s" % version_str)
+
+        version_split = version_str[1:].split('.')
         try:
             if len(version_split) == 1:
                 return int(version_split[0])
@@ -196,7 +199,13 @@ class PluginPref(MutableMapping):
         else:
             raise TypeError("version must be an integer or a tuple of integers")
 
-        return hexchat.set_pluginpref(self._version_pref_name, version_str)
+        # Prevent hexchat from "trying to be smart"
+        # and converting a string like "0.3.0" into just "0"
+        # by explcitly starting with a non-numeric character.
+        version_str = "v" + version_str
+        print("setting version", self._version_pref_name, version_str)
+        if not hexchat.set_pluginpref(self._version_pref_name, version_str):
+            raise RuntimeError("Could not set version")
 
     version = property(
         get_version,
