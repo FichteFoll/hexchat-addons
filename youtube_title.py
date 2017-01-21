@@ -203,9 +203,10 @@ def yttcmd_cb(word, word_eol, userdata):
 
     if sub_cmd == '_prefs':  # debug
         print(list(prefs.items()))
+        print("prefs version:", prefs.version)
         return hexchat.EAT_HEXCHAT
 
-    # print help for sub-commands (if valid)
+    # print help for sub-commands or everything
     if not args:
         print(HELP_MAP.get(sub_cmd, HELP_STR))
         return hexchat.EAT_HEXCHAT
@@ -248,7 +249,7 @@ def main():
 
     if prefs.version is NotImplemented:
         print("There was an error retrieving the preferences' version.\n"
-              "It is advised to seek help from the author (FichteFoll)"
+              "It is advised to seek help from the author (FichteFoll) "
               "and run around in circles.")
         return
 
