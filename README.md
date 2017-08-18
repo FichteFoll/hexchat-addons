@@ -96,6 +96,14 @@ when you press space or tab after it.
 Hold shift key to insert literal space.
 
 
+### [discord_bot_bridge.py](./discord_bot_bridge.py)
+
+Translates messages relayed through a discord bot
+into native IRC messages.
+I don't actually know
+which specific implementation this script targets.
+
+
 ### [ff_twitch.py](./ff_twitch.py)
 
 Mutes spammy +o, -o
