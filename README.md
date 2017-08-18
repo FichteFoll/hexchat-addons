@@ -26,8 +26,11 @@ Lua scripts require the Lua plugin engine to be installed
 2. Right-clicking the "Raw" button on the right side
 3. Select "Save Link as...".
 4. Download the file to your Hexchat's *addons* folder,
-   where they will automatically be loaded from on startup.  
-   Example: `'C:\\Users\\Fichte\\AppData\\Roaming\\HexChat\\addons'`
+   where they will automatically be loaded from on startup.
+
+   Examples:
+   `'C:\\Users\\Fichte\\AppData\\Roaming\\HexChat\\addons'`
+   `/home/fichte/.config/hexchat/addons`
 
 The following Hexchat command
 will print the path to your addons folder:
