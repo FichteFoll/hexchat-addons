@@ -5,15 +5,15 @@ This is just a compilation of modules and addons for hexchat,
 using its Python plugin.
 
 Unless further noted,
-all scripts are tested 
+all scripts are tested
 to work on
 
 - **Windows 7**
   with **Hexchat 2.12.1** or higher,
   **Python 3.5**
-- **Arch Linux** 
-  with Hexchat 2.12.4, 
-  Python 3.6, 
+- **Arch Linux**
+  with Hexchat 2.12.4,
+  Python 3.6,
   Lua 5.3
 
 Lua scripts require the Lua plugin engine to be installed
@@ -29,7 +29,7 @@ Lua scripts require the Lua plugin engine to be installed
    where they will automatically be loaded from on startup.  
    Example: `'C:\\Users\\Fichte\\AppData\\Roaming\\HexChat\\addons'`
 
-The following Hexchat command 
+The following Hexchat command
 will print the path to your addons folder:
 
 ```
@@ -49,7 +49,7 @@ and create directories when necessary.
 
 ## Modules
 
-Some of my scripts share utility functions 
+Some of my scripts share utility functions
 that I branched into their own modules
 for better code re-use.
 
@@ -95,8 +95,8 @@ Hold shift key to insert literal space.
 
 ### [ff_twitch.py](./ff_twitch.py)
 
-Mutes spammy +o, -o 
-as well as join and part messages 
+Mutes spammy +o, -o
+as well as join and part messages
 if there are more than a certain number of users in a channel.
 
 Used modules: `util`
@@ -104,7 +104,7 @@ Used modules: `util`
 
 ### [mpv_np.py](./mpv_np.py)
 
-Executes a hexchat command 
+Executes a hexchat command
 subject to mpv's [property expansion][]
 by using its IPC protocol.
 This can be used to announces the currently loaded file.
@@ -134,14 +134,14 @@ or haven't talked in a certain period
 - If a recently joined user starts talking,
   his 'Join' event is late-emitted with the original timestamp.
 - Handles renames.
-- If a user that previously talked 
+- If a user that previously talked
   parts and joins again (or renames),
   the events are shown.
 - Events for nicks in your notify list are always shown.
 - Mode changes that affect the channel are always shown.
 
-Works with ZNC bouncers 
-and also with \*buffextras module 
+Works with ZNC bouncers
+and also with \*buffextras module
 using [buffextras.py][].
 
 Requires Hexchat 2.12.2.
