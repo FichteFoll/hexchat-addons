@@ -1,6 +1,6 @@
 __module_name__ = "Discord Bot Bridge"
 __module_author__ = "FichteFoll"
-__module_version__ = "0.1.0"
+__module_version__ = "0.1.1"
 __module_description__ = "Translates messages bridged from Discord into the native IRC protocol"
 
 import re
@@ -37,8 +37,9 @@ def msg_cb(word, word_eol, event_name, attrs):
         userlist = hexchat.get_list('users')
         if original_nick not in userlist:
             # TODO test if emit_print also works
+            spaceless_nick = original_nick.replace(" ", "_")
             hexchat.command("RECV {nick}!someone\@discord.server JOIN {channel}"
-                            .format(nick=original_nick, channel=channel))
+                            .format(nick=spaceless_nick, channel=channel))
 
     # try to decect actions
     if message.startswith(REVERSE_COLOR) and message.endswith(REVERSE_COLOR):
