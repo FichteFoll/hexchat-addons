@@ -41,11 +41,6 @@ def msg_cb(word, word_eol, event_name, attrs):
     nick = hexchat.strip(colored_nick)
 
     channel = hexchat.get_info('channel')
-    # if channel in BOT_MAP:
-    #     print("nick", repr(nick))
-    #     print("nickcmp", nick, BOT_MAP[channel], hexchat.nickcmp(nick, BOT_MAP[channel]))
-    #     print(".lower()==?", nick.lower() == BOT_MAP[channel].lower())
-
     if channel not in BOT_MAP:
         return hexchat.EAT_NONE
     elif hexchat.nickcmp(nick, BOT_MAP[channel]) != 0:
@@ -62,7 +57,6 @@ def msg_cb(word, word_eol, event_name, attrs):
         if not is_user_in_channel(original_nick):
             # TODO test if emit_print also works
             spaceless_nick = original_nick.replace(" ", "_")
-            print("making", spaceless_nick, "join")
             hexchat.command("RECV :{nick}!someone@discord.server JOIN {channel}"
                             .format(nick=spaceless_nick, channel=channel))
 
