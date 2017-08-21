@@ -89,7 +89,6 @@ def my_msg_cb(word, word_eol, _):
 
     nick_regex = r"\b(?<!@)({})\b".format("|".join(discord_nicks))
     original_text = word_eol[0]
-    print([nick_regex, r"@\1", original_text])
 
     text = re.sub(nick_regex, r"@\1", original_text)
     if text == original_text:
