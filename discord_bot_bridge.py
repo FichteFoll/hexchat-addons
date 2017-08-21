@@ -1,6 +1,6 @@
 __module_name__ = "Discord Bot Bridge"
 __module_author__ = "FichteFoll"
-__module_version__ = "0.2.0"
+__module_version__ = "0.3.0"
 __module_description__ = "Translates messages bridged from Discord into the native IRC protocol"
 
 import re
@@ -74,9 +74,36 @@ def msg_cb(word, word_eol, event_name, attrs):
     return hexchat.EAT_ALL
 
 
+# Without the @no_recursion utility,
+# this is beeing called twice,
+# but shouldn't loop regardless.
+# I just chose to not add a dependency for some performance loss.
+def my_msg_cb(word, word_eol, _):
+    """Add "@" before nicks sourced from discord."""
+    channel = hexchat.get_info('channel')
+    if channel not in BOT_MAP:
+        return hexchat.EAT_NONE
+
+    discord_nicks = {user.nick for user in hexchat.get_list('users')
+                     if user.host == "someone@discord.server"}
+
+    nick_regex = r"\b(?<!@)({})\b".format("|".join(discord_nicks))
+    original_text = word_eol[0]
+    print([nick_regex, r"@\1", original_text])
+
+    text = re.sub(nick_regex, r"@\1", original_text)
+    if text == original_text:
+        return hexchat.EAT_NONE
+    else:
+        hexchat.command("SAY {}".format(text))
+        return hexchat.EAT_ALL
+
+
 if __name__ == '__main__':
     for event in ('Channel Message', 'Channel Msg Hilight',
                   'Channel Action', 'Channel Action Hilight'):
         hexchat.hook_print_attrs(event, msg_cb, event, hexchat.PRI_HIGHEST)
+
+    hexchat.hook_command('', my_msg_cb)
 
     print(__module_name__, __module_version__, "loaded")
