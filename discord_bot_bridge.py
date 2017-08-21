@@ -1,6 +1,6 @@
 __module_name__ = "Discord Bot Bridge"
 __module_author__ = "FichteFoll"
-__module_version__ = "0.3.0"
+__module_version__ = "0.3.1"
 __module_description__ = "Translates messages bridged from Discord into the native IRC protocol"
 
 import re
@@ -50,13 +50,13 @@ def msg_cb(word, word_eol, event_name, attrs):
     if not match:
         return hexchat.EAT_NONE
     original_nick, message = match.groups()
+    spaceless_nick = original_nick.replace(" ", "_")  # IRC doesn't like spaces in nicks at all
 
-    if original_nick == hexchat.get_info('nick'):
+    if spaceless_nick == hexchat.get_info('nick'):
         event_name = 'Your Message'
     else:
-        if not is_user_in_channel(original_nick):
+        if not is_user_in_channel(spaceless_nick):
             # TODO test if emit_print also works
-            spaceless_nick = original_nick.replace(" ", "_")
             hexchat.command("RECV :{nick}!someone@discord.server JOIN {channel}"
                             .format(nick=spaceless_nick, channel=channel))
 
@@ -68,7 +68,7 @@ def msg_cb(word, word_eol, event_name, attrs):
     # replace with proper escape code
     message = message.replace(REVERSE_COLOR, ITALICS)
 
-    hexchat.emit_print(event_name, original_nick, message, MODE_CHAR, identified_text,
+    hexchat.emit_print(event_name, spaceless_nick, message, MODE_CHAR, identified_text,
                        time=attrs.time)
 
     return hexchat.EAT_ALL
