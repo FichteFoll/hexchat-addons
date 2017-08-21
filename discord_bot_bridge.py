@@ -1,6 +1,6 @@
 __module_name__ = "Discord Bot Bridge"
 __module_author__ = "FichteFoll"
-__module_version__ = "0.3.1"
+__module_version__ = "0.3.2"
 __module_description__ = "Translates messages bridged from Discord into the native IRC protocol"
 
 import re
@@ -52,13 +52,21 @@ def msg_cb(word, word_eol, event_name, attrs):
     original_nick, message = match.groups()
     spaceless_nick = original_nick.replace(" ", "_")  # IRC doesn't like spaces in nicks at all
 
+    gui_color = 2
     if spaceless_nick == hexchat.get_info('nick'):
         event_name = 'Your Message'
+        gui_color = 0
     else:
         if not is_user_in_channel(spaceless_nick):
             # TODO test if emit_print also works
             hexchat.command("RECV :{nick}!someone@discord.server JOIN {channel}"
                             .format(nick=spaceless_nick, channel=channel))
+        if "Hilight" in event_name:
+            gui_color = 3
+
+    # Manually mark channel as having activity (or highlight)
+    # because we consume the original event.
+    hexchat.command("GUI color {}".format(gui_color))
 
     # try to decect actions
     if message.startswith(REVERSE_COLOR) and message.endswith(REVERSE_COLOR):
