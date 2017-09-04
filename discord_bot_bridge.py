@@ -1,6 +1,6 @@
 __module_name__ = "Discord Bot Bridge"
 __module_author__ = "FichteFoll"
-__module_version__ = "0.3.2"
+__module_version__ = "0.3.3"
 __module_description__ = "Translates messages bridged from Discord into the native IRC protocol"
 
 import re
@@ -94,6 +94,8 @@ def my_msg_cb(word, word_eol, _):
 
     discord_nicks = {user.nick for user in hexchat.get_list('users')
                      if user.host == "someone@discord.server"}
+    if not discord_nicks:
+        return hexchat.EAT_NONE
 
     nick_regex = r"\b(?<!@)({})\b".format("|".join(discord_nicks))
     original_text = word_eol[0]
