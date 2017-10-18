@@ -1,6 +1,6 @@
 __module_name__ = "Discord Bot Bridge"
 __module_author__ = "FichteFoll"
-__module_version__ = "0.3.3"
+__module_version__ = "0.3.4"
 __module_description__ = "Translates messages bridged from Discord into the native IRC protocol"
 
 import re
@@ -9,7 +9,7 @@ import hexchat
 
 # associates channels where this functionality is active with the nickname of the bot
 BOT_MAP = {
-    "#nanaone": "_dc_"
+    "#nanaone": ["_dc_", "_dc_1", "_dc_2"]
 }
 
 MODE_CHAR = "⇔"
@@ -22,8 +22,9 @@ def iter_fill(iterable, n, fillvalue=None):
     for x in iterable:
         yield x
         n -= 1
-    for _ in range(n):
-        yield fillvalue
+    yield from (fillvalue,) * n
+    # for _ in range(n):
+    #     yield fillvalue
 
 
 def is_user_in_channel(nick, context=hexchat):
@@ -43,7 +44,10 @@ def msg_cb(word, word_eol, event_name, attrs):
     channel = hexchat.get_info('channel')
     if channel not in BOT_MAP:
         return hexchat.EAT_NONE
-    elif hexchat.nickcmp(nick, BOT_MAP[channel]) != 0:
+    for bot_nick in BOT_MAP[channel]:
+        if hexchat.nickcmp(nick, bot_nick) == 0:
+            break
+    else:
         return hexchat.EAT_NONE
 
     match = re.match(r"^<([^>]+)> (.*)", text)
