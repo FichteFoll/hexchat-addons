@@ -100,8 +100,9 @@ Hold shift key to insert literal space.
 
 Translates messages relayed through a discord bot
 into native IRC messages.
-I don't actually know
-which specific implementation this script targets.
+Targets <https://github.com/reactiflux/discord-irc>.
+Configure channels and bot nicknames
+with the `BOT_MAP` mapping (in code).
 
 
 ### [ff_twitch.py](./ff_twitch.py)
