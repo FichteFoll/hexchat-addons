@@ -3,7 +3,7 @@ local Gio = lgi.require('Gio')
 local GLib = lgi.require('GLib')
 
 
-hexchat.register("viewlog", "1.2.0", "Open log file for the current context")
+hexchat.register("viewlog", "1.2.1", "Open log file for the current context")
 
 
 --[=[
@@ -52,6 +52,7 @@ local function log_create_filename(channame)
     elseif is_windows then
         return channame:gsub('[\\|/><:"*?]', "_")
     else
+        channame = channame:gsub('/', "_")
         return rfc_strlower(channame)
     end
 end
