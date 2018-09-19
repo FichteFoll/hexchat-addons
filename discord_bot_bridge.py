@@ -1,6 +1,6 @@
 __module_name__ = "Discord Bot Bridge"
 __module_author__ = "FichteFoll"
-__module_version__ = "0.3.4"
+__module_version__ = "0.3.5"
 __module_description__ = "Translates messages bridged from Discord into the native IRC protocol"
 
 import re
@@ -8,8 +8,10 @@ import re
 import hexchat
 
 # associates channels where this functionality is active with the nickname of the bot
+# using a case-insensitive regular expression
 BOT_MAP = {
-    "#nanaone": ["_dc_", "_dc_1", "_dc_2"]
+    "#nanaone": r"_dc_\d*",
+    "#pa-subs": r"Benji\d*",
 }
 
 MODE_CHAR = "⇔"
@@ -42,12 +44,8 @@ def msg_cb(word, word_eol, event_name, attrs):
     nick = hexchat.strip(colored_nick)
 
     channel = hexchat.get_info('channel')
-    if channel not in BOT_MAP:
-        return hexchat.EAT_NONE
-    for bot_nick in BOT_MAP[channel]:
-        if hexchat.nickcmp(nick, bot_nick) == 0:
-            break
-    else:
+    bot_regex = BOT_MAP.get(channel)
+    if not bot_regex or not re.search(bot_regex, hexchat.strip(nick), re.IGNORECASE):
         return hexchat.EAT_NONE
 
     match = re.match(r"^<([^>]+)> (.*)", text)
@@ -63,6 +61,7 @@ def msg_cb(word, word_eol, event_name, attrs):
     else:
         if not is_user_in_channel(spaceless_nick):
             # TODO test if emit_print also works
+            # TODO cannot specify timestamp of msg event
             hexchat.command("RECV :{nick}!someone@discord.server JOIN {channel}"
                             .format(nick=spaceless_nick, channel=channel))
         if "Hilight" in event_name:
@@ -70,7 +69,8 @@ def msg_cb(word, word_eol, event_name, attrs):
 
     # Manually mark channel as having activity (or highlight)
     # because we consume the original event.
-    hexchat.command("GUI color {}".format(gui_color))
+    if gui_color:
+        hexchat.command("GUI color {}".format(gui_color))
 
     # try to decect actions
     if message.startswith(REVERSE_COLOR) and message.endswith(REVERSE_COLOR):
@@ -101,7 +101,7 @@ def my_msg_cb(word, word_eol, _):
     if not discord_nicks:
         return hexchat.EAT_NONE
 
-    nick_regex = r"\b(?<!@)({})\b".format("|".join(discord_nicks))
+    nick_regex = r"\b(?<!@)({})\b".format("|".join(map(re.escape, discord_nicks)))
     original_text = word_eol[0]
 
     text = re.sub(nick_regex, r"@\1", original_text)
