@@ -3,7 +3,7 @@ local Gio = lgi.require('Gio')
 local GLib = lgi.require('GLib')
 
 
-hexchat.register("viewlog", "1.2.1", "Open log file for the current context")
+hexchat.register("viewlog", "1.2.2", "Open log file for the current context")
 
 
 --[=[
@@ -13,17 +13,18 @@ hexchat.register("viewlog", "1.2.1", "Open log file for the current context")
 
     Instead, we require the user
     to provide a program (and arguments).
-    The first `nil` occurance
+    The first `%s` occurance in a string or `nil`
     will be replaced with the logfile path.
 
     Note that on Windows,
     "notepad.exe" can not handle LF line breaks,
     which Hexchats writes in recent versions.
 
-    Example:
+    Examples:
         local DEFAULT_PROGRAM = {[[e:\Program Files\Sublime Text 3\sublime_text.exe]]}
+        local DEFAULT_PROGRAM = {"termite", "-e", "less -- '%s'"}
 ]=]
-local DEFAULT_PROGRAM = {"subl"} -- MODIFY THIS --
+local DEFAULT_PROGRAM = {"alacritty", "-e", "less -- '%s'"} -- MODIFY THIS --
 
 
 ---------------------------------------------------------------------------------------------------
@@ -117,12 +118,15 @@ local function viewlog_cb(word, word_eol)
         return hexchat.EAT_ALL
     end
 
-    -- Build cmd and replace first 'nil' in program.
+    -- Build cmd and replace first '%s' or 'nil' in program.
     -- This will end up appending if there is no nil in the middle.
     local cmd = program
     for i = 1, #program + 1 do
         if cmd[i] == nil then
             cmd[i] = logfile:get_path()
+            break
+        elseif cmd[i]:find("%%s") then
+            cmd[i] = cmd[i]:format(logfile:get_path())
             break
         end
     end
@@ -144,4 +148,4 @@ end
 hexchat.hook_command("viewlog", viewlog_cb,
                      "Usage: /viewlog [program] - Open log file of the current context in "
                      .. "'program' (path to executable). \n"
-                     .. "You should set a program (and arguments) in the script's source code.")
+                     .. "You should set a default program (and arguments) in the script's source code.")
