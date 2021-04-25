@@ -2,8 +2,8 @@ import hexchat
 
 
 __module_name__ = 'Current Channel Replace'
-__module_version__ = '1.0.0'
-__module_description__ = ('Replaces "#" with current channel on tab and space keys, '
+__module_version__ = '1.1.0'
+__module_description__ = ('Replaces stand-alone "#" with current channel on tab and space keys, '
                           'unless shift is hold.')
 
 KEY_TAB = 65289
@@ -29,12 +29,13 @@ def on_key_press(word, word_eol, userdata):
         pos
         and key in (KEY_TAB, KEY_SPACE)
         and not (modifier & KEY_MOD_SHIFT)
-        and msg[pos - 1] == "#"
+        and msg[max(0, pos - 2):pos].lstrip() == "#"
     ):
         channel = hexchat.get_info('channel')
         msg = msg[:pos - 1] + channel + msg[pos:]
         hexchat.command("settext %s" % msg)
         hexchat.command("setcursor %d" % (pos + len(channel) - 1))
+
 
 if __name__ == '__main__':
     hexchat.hook_print('Key Press', on_key_press)
