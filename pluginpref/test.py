@@ -127,5 +127,6 @@ def main():
     test_jsonpluginpref()
     print("all tests passed!")
 
+
 if __name__ == '__main__':
     main()

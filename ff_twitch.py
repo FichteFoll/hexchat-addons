@@ -16,14 +16,12 @@ import hexchat
 import os
 import sys
 
-import hexchat
-
 # Make imports work (see https://github.com/hexchat/hexchat/issues/1396)
 addons_path = os.path.join(hexchat.get_info("configdir"), "addons")
 if addons_path not in sys.path:
     sys.path.append(addons_path)
 
-from util import only_on, set_timeout
+from util import only_on, set_timeout  # noqa: E402
 
 
 ###############################################################################
@@ -112,6 +110,7 @@ def main():
     hexchat.hook_print('Capability List', caps_cb)
 
     print(__module_name__, __module_version__, "loaded")
+
 
 if __name__ == '__main__':
     main()

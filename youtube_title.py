@@ -14,8 +14,8 @@ addons_path = os.path.join(hexchat.get_info("configdir"), "addons")
 if addons_path not in sys.path:
     sys.path.append(addons_path)
 
-from pluginpref import PluginPref, JSONPluginPref
-from util import set_timeout
+from pluginpref import PluginPref, JSONPluginPref  # noqa: E402
+from util import set_timeout  # noqa: E402
 
 
 ###############################################################################

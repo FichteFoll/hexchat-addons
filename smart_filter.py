@@ -111,6 +111,7 @@ class JoinMap(TimestampMap):
             context.emit_print('Join', *data, time=tmstmp)
             self.is_emitting = False
 
+
 tmap = TimestampMap()
 jmap = JoinMap()
 
