@@ -79,6 +79,13 @@ Refer to the source code and docstrings for details.
 
 ## Addons
 
+### [amh.py](./amh.py)
+
+Short for "Anti Massive Highlight".
+Blocks messages that contain a lot of nicknames
+of the current channel.
+
+
 ### [better_raw_modes.py](./better_raw_modes.py)
 
 Strips the channel name for channel mode messages
