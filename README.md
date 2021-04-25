@@ -9,7 +9,7 @@ all scripts are tested
 to work on
 
 - **Windows 7**
-  with **Hexchat 2.12.1** or higher,
+  with **Hexchat 2.12.2** or higher,
   **Python 3.5**
 - **Arch Linux**
   with Hexchat 2.12.4,
@@ -155,9 +155,6 @@ or haven't talked in a certain period
 Works with ZNC bouncers
 and also with \*buffextras module
 using [buffextras.py][].
-
-Requires Hexchat 2.12.2.
-Also works with Python 2.7.
 
 [smartparts.py]: https://github.com/TingPing/plugins/blob/master/HexChat/smartparts.py
 [buffextras.py]: https://github.com/knitori/tools/blob/master/hexchat/buffextras.py
