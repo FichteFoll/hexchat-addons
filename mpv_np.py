@@ -4,13 +4,12 @@ import json
 import os.path
 import socket
 import sys
-import time
 
 import hexchat
 
 
 __module_name__ = "mpv now playing"
-__module_version__ = "0.4.2"
+__module_version__ = "1.0.0"
 __module_description__ = "Announces info of the currently loaded 'file' in mpv"
 
 # # Configuration # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -21,33 +20,13 @@ __module_description__ = "Announces info of the currently loaded 'file' in mpv"
 WIN_PIPE_PATH = R"\\.\pipe\mpvsocket"
 UNIX_PIPE_PATH = "/tmp/mpv-socket"  # variables are expanded
 
-# Windows only:
 # The command that is being executed.
 # Supports mpv's property expansion:
 # https://mpv.io/manual/stable/#property-expansion
 CMD_FMT = R'me is playing: ${media-title} [${time-pos}${!duration==0: / ${duration}}]'
 
-# On UNIX, the above is not supported yet
-# and this Python format string is used instead.
-# `{title}` will be replaced with the title.
-LEGACY_CMD_FMT = "me is playing: {title}"
-
 
 # # The Script # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-
-def _tempfile_path(*args, **kwargs):
-    """Generate a sure-to-be-free tempfile path.
-
-    It's hacky but it works.
-    """
-    import tempfile
-    fd, tmpfile = tempfile.mkstemp()
-    # close and delete; we only want the path
-    os.close(fd)
-    os.remove(tmpfile)
-    return tmpfile
-
 
 # If asynchronous IO was to be added,
 # the Win32API would need to be used on Windows.
@@ -122,15 +101,6 @@ class MpvIpcClient(metaclass=ABCMeta):
     def __exit__(self, *_):
         self.close()
 
-    @abstractmethod
-    def expand_properties(self, fmt):
-        """Expand a mpv property string using its run command and platform-specific hacks.
-
-        Pending https://github.com/mpv-player/mpv/issues/3166
-        for easier implementation.
-        """
-        pass
-
 
 class WinMpvIpcClient(MpvIpcClient):
 
@@ -147,55 +117,6 @@ class WinMpvIpcClient(MpvIpcClient):
 
     def close(self):
         self._f.close()
-
-    def expand_properties(self, fmt, timeout=1.5):
-        """Expand a mpv property string using its run command and other hacks.
-
-        Notably, spawn a Powershell process that writes a string to some file.
-        Because of this, there are restrictions on the property string
-        that will most likely *not* be met,
-        but are checked for anyway.
-
-        Since this is a polling-based approach (and unsafe too),
-        a timeout mechanic is implemented
-        and the wait time can be specified.
-        """
-        if "'" in fmt or "\\n" in fmt:
-            raise ValueError("unsupported format string - may not contain `\\n` or `'`")
-
-        tmpfile = _tempfile_path()
-
-        # backslashes in quotes need to be escaped for mpv
-        self.input_command(R'''run powershell.exe -Command "'{fmt}' | Out-File '{tmpfile}'"'''
-                           .format(fmt=fmt, tmpfile=tmpfile.replace("\\", "\\\\")))
-
-        # some tests reveal an average time requirement of 0.35s
-        start_time = time.time()
-        end_time = start_time + timeout
-        while time.time() < end_time:
-            if not os.path.exists(tmpfile):
-                continue
-            try:
-                with open(tmpfile, 'r', encoding='utf-16 le') as f:  # Powershell writes utf-16 le
-                    # Because we open the file faster than powershell writes to it,
-                    # wait until there is a newline in out tmpfile (which powershell writes).
-                    # This means we can't support newlines in the fmt string,
-                    # but who needs those anyway?
-                    buffer = ''
-                    while time.time() < end_time:
-                        result = f.read()
-                        buffer += result
-                        if "\n" in result:
-                            # strip BOM and next line
-                            buffer = buffer.lstrip("\ufeff").splitlines()[0]
-                            return buffer
-                        buffer += result
-            except OSError:
-                continue
-            else:
-                break
-            finally:
-                os.remove(tmpfile)
 
 
 class UnixMpvIpcClient(MpvIpcClient):
@@ -221,9 +142,6 @@ class UnixMpvIpcClient(MpvIpcClient):
     def close(self):
         self._sock.close()
 
-    def expand_properties(self, fmt):
-        return NotImplemented
-
 
 ###############################################################################
 
@@ -231,14 +149,11 @@ class UnixMpvIpcClient(MpvIpcClient):
 def mpv_np(caller, callee, helper):
     try:
         with MpvIpcClient.for_platform() as mpv:
-            command = mpv.expand_properties(CMD_FMT)
-            if command is None:
-                print("unable to expand property string - falling back to legacy")
-                command = NotImplemented
-            if command is NotImplemented:
-                title = mpv.command("get_property", "media-title")
-                command = LEGACY_CMD_FMT.format(title=title)
-            hexchat.command(command)
+            command = mpv.command('expand-text', CMD_FMT)  # since mpv 0.25.0
+            if command:
+                hexchat.command(command)
+            else:
+                print("unable to expand property string; result was", command)
 
     except OSError:
         # import traceback; traceback.print_exc()

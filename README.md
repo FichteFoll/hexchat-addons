@@ -126,12 +126,12 @@ Used modules: `util`
 Executes a hexchat command
 subject to mpv's [property expansion][]
 by using its IPC protocol.
-This can be used to announces the currently loaded file.
+This can be used to announce the currently loaded file.
 Requires setting `input-ipc-server`
 in mpv's config file
 (refer to `/help mpv`).
 
-UNIX systems only support the legacy method as of now.
+Requires mpv 0.25.0 or higher.
 
 ```
 [00:32:07] * FichteFoll is playing: NOMA - Brain Power [00:01:04 / 00:06:08]
