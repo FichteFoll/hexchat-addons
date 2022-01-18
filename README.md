@@ -12,9 +12,9 @@ to work on
   with **Hexchat 2.12.2** or higher,
   **Python 3.5**
 - **Arch Linux**
-  with Hexchat 2.12.4,
-  Python 3.6,
-  Lua 5.3
+  with Hexchat 2.16.0,
+  Python 3.10,
+  Lua 5.4
 
 Lua scripts require the Lua plugin engine to be installed
 (available since Hexchat 2.12).
