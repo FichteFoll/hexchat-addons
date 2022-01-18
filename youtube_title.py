@@ -1,6 +1,7 @@
 """Python 3 plugin for Hexchat that prints or announces titles of YouTube URLs.
 """
 
+import builtins
 import re
 import os
 import sys
@@ -63,7 +64,7 @@ def print(*args, context=None, **kwargs):
     if context:
         context.prnt(" ".join(args))
     else:
-        __builtins__.print(*args, **kwargs)
+        builtins.print(*args, **kwargs)
 
 
 ###############################################################################
